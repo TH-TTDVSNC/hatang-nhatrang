@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hiện trạng hạ tầng công viên tuyến biển – phường Nha Trang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0F252D;
+  --muted: #4A5D65;
+  --sea: #0A5C70;
+  --sea-deep: #073B49;
+  --paper: #EEF3F4;
+  --surface: #FFFFFF;
+  --line: #C5D2D6;
+  --s-red: #C22F1B;
+  --s-amber: #A35F00;
+  --s-green: #1C7A3E;
+  --s-blue: #3D52B4;
+  --danger: #A8200F;
+  --tabs-h: 62px;
+  --r: 6px;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 16px/1.45 "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", Arial, sans-serif;
+  padding-bottom: calc(var(--tabs-h) + 20px);
+}
+h2 { font-size: 1.375rem; line-height: 1.2; font-weight: 700; margin: 0 0 14px; letter-spacing: -0.01em; }
+h3 { font-size: 1.0625rem; font-weight: 600; margin: 28px 0 10px; }
+p { margin: 0 0 10px; }
+a { color: var(--sea-deep); font-weight: 500; }
+[hidden] { display: none !important; }
+
+/* Thanh trên: nền xanh biển đậm, chữ trắng như biển tên đường */
+.top { background: var(--sea-deep); color: #fff; padding: 10px 16px 8px; position: sticky; top: 0; z-index: 20; }
+.top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand-title { margin: 0; font-size: 1.125rem; font-weight: 700; line-height: 1.15; }
+.brand-sub { margin: 0; font-size: 0.8125rem; font-weight: 500; opacity: 0.85; }
+.who {
+  font: inherit; font-size: 0.875rem; font-weight: 600; color: #fff; background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.65); border-radius: var(--r);
+  min-height: 40px; padding: 4px 12px; max-width: 46vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sync { font-size: 0.8125rem; margin-top: 6px; display: flex; align-items: center; gap: 8px; min-height: 20px; }
+.sync::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: #7FE0A6; flex: none; }
+.sync.is-loading::before { background: #F4D06F; }
+.sync.is-error::before { background: #FF9A8A; border-radius: 1px; }
+.sync button { font: inherit; color: #fff; background: none; border: 0; text-decoration: underline; padding: 6px 4px; }
+
+.open-note { margin: 0; padding: 9px 16px; background: #FFF3C9; border-bottom: 1px solid #E2C766; font-size: 0.8125rem; line-height: 1.4; color: #3B2F00; }
+.linklike { font: inherit; font-weight: 600; color: var(--sea-deep); background: none; border: 0; padding: 2px 0; text-decoration: underline; }
+
+main { padding: 18px 16px 8px; max-width: 760px; margin: 0 auto; }
+
+/* Điều hướng dưới */
+.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; height: calc(var(--tabs-h) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: grid; grid-template-columns: repeat(6, 1fr); background: var(--surface); border-top: 1px solid var(--line);
+}
+.tabs button {
+  font: inherit; font-size: 0.6875rem; font-weight: 500; color: var(--muted); background: none; border: 0; border-top: 3px solid transparent;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 4px 2px;
+}
+.tabs svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.tabs button[aria-current="page"] { color: var(--sea-deep); font-weight: 700; border-top-color: var(--sea); }
+
+/* Nút và ô nhập */
+.btn {
+  font: inherit; font-weight: 600; color: var(--sea-deep); background: var(--surface); border: 1.5px solid var(--sea);
+  border-radius: var(--r); min-height: 46px; padding: 8px 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
+}
+.btn.primary { background: var(--sea); color: #fff; }
+.btn.big { min-height: 54px; font-size: 1.0625rem; flex: 1; }
+.btn.ghost { border-color: var(--line); color: var(--ink); font-weight: 500; }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.small { min-height: 40px; padding: 6px 12px; font-size: 0.875rem; }
+.btn:disabled { opacity: 0.55; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid #F2A900; outline-offset: 2px; }
+
+label, .label, legend { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; padding: 0; }
+input[type="text"], input[type="search"], input[type="url"], select, textarea {
+  font: inherit; color: var(--ink); width: 100%; min-height: 48px; padding: 10px 12px;
+  background: var(--surface); border: 1.5px solid #8FA3AA; border-radius: var(--r);
+}
+textarea { min-height: 92px; resize: vertical; }
+input::placeholder, textarea::placeholder { color: #7B8B91; }
+.field { margin: 0 0 18px; border: 0; padding: 0; min-width: 0; }
+.hint { font-size: 0.8125rem; color: var(--muted); margin: 8px 0 0; }
+.error { font-size: 0.875rem; font-weight: 500; color: var(--danger); background: #FCE9E5; border-left: 4px solid var(--danger); padding: 10px 12px; margin: 10px 0; border-radius: 0 var(--r) var(--r) 0; }
+.form-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.stack { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+.inline { display: flex; gap: 8px; }
+.inline input { flex: 1; min-width: 0; }
+.check { display: flex; align-items: center; gap: 10px; font-weight: 500; min-height: 44px; margin: 0; }
+.check input { width: 22px; height: 22px; accent-color: var(--sea); flex: none; }
+
+/* Chọn một trong vài giá trị */
+.seg { display: block; }
+.seg-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.seg-opts label {
+  margin: 0; display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 8px 10px; font-weight: 500;
+  background: var(--surface); border: 1.5px solid #8FA3AA; border-radius: var(--r);
+}
+.seg-opts input { position: absolute; opacity: 0; pointer-events: none; }
+.seg-opts label:has(input:checked) { border-color: var(--sea-deep); background: #DCEEF2; font-weight: 700; box-shadow: inset 0 0 0 1px var(--sea-deep); }
+.seg-opts label:has(input:focus-visible) { outline: 3px solid #F2A900; outline-offset: 2px; }
+
+.loc { background: #E2ECEE; border-radius: var(--r); padding: 14px 12px; }
+.loc legend { float: left; width: 100%; margin-bottom: 10px; }
+.loc-actions { clear: both; display: grid; grid-template-columns: 1fr; gap: 8px; }
+.loc-link { margin-top: 12px; }
+.latlng { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.latlng input { font-variant-numeric: tabular-nums; }
+
+.photos { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.photos:empty { display: none; }
+.photo { position: relative; width: 112px; }
+.photo img { width: 112px; height: 84px; object-fit: cover; border-radius: var(--r); border: 1px solid var(--line); display: block; background: #D8E1E4; }
+.photo small { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+.photo button { position: absolute; top: 4px; right: 4px; min-width: 40px; min-height: 32px; border: 0; border-radius: 4px; background: rgba(15, 37, 45, 0.85); color: #fff; font: inherit; font-size: 0.75rem; font-weight: 600; }
+.file-btn { cursor: pointer; }
+.draft-note { background: #DCEEF2; border-left: 4px solid var(--sea); padding: 10px 12px; margin-bottom: 16px; font-size: 0.875rem; border-radius: 0 var(--r) var(--r) 0; }
+
+/* Dấu trạng thái: mỗi trạng thái một hình riêng, không chỉ dựa vào màu */
+.mark { width: 22px; height: 22px; flex: none; display: inline-block; vertical-align: -4px; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 0.875rem; white-space: nowrap; }
+.status .mark { width: 16px; height: 16px; vertical-align: 0; }
+.st-0 { color: var(--s-red); } .st-1 { color: var(--s-amber); } .st-2 { color: var(--s-green); } .st-3 { color: var(--s-blue); }
+
+/* Tổng quan */
+.totals { display: grid; grid-template-columns: 1fr 1fr; border: 1.5px solid var(--ink); border-radius: var(--r); background: var(--surface); margin-bottom: 22px; }
+.totals div { padding: 12px 14px; }
+.totals div + div { border-left: 1.5px solid var(--ink); }
+.totals b { display: block; font-size: 2.25rem; line-height: 1.05; font-weight: 700; font-variant-numeric: tabular-nums; }
+.totals span { font-size: 0.875rem; color: var(--muted); }
+.stackbar { display: flex; height: 22px; border-radius: 3px; overflow: hidden; background: #D8E1E4; margin: 0 0 12px; }
+.stackbar i { display: block; height: 100%; background: currentColor; min-width: 3px; }
+.breakdown { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.breakdown li { border-top: 1px solid var(--line); }
+.breakdown li:first-child { border-top: 0; }
+.breakdown button, .breakdown .line { font: inherit; color: inherit; background: none; border: 0; width: 100%; text-align: left; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 11px 14px; min-height: 48px; }
+.breakdown .n { font-weight: 700; font-variant-numeric: tabular-nums; }
+.breakdown .bar { grid-column: 1 / -1; height: 6px; background: #E2E9EB; border-radius: 3px; overflow: hidden; }
+.breakdown .bar i { display: block; height: 100%; background: var(--sea); }
+.empty { background: var(--surface); border: 1.5px dashed #8FA3AA; border-radius: var(--r); padding: 18px 16px; color: var(--muted); }
+.empty .btn { margin-top: 10px; }
+
+/* Danh sách */
+.filters { display: grid; gap: 8px; margin-bottom: 10px; }
+.filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.count { font-size: 0.875rem; color: var(--muted); margin: 6px 0; }
+.rows { list-style: none; margin: 12px 0 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.rows:empty { display: none; }
+.rows > li { border-top: 1px solid var(--line); }
+.rows > li:first-child { border-top: 0; }
+.row { font: inherit; color: inherit; background: none; border: 0; width: 100%; text-align: left; display: grid; grid-template-columns: 26px 1fr; gap: 2px 10px; padding: 13px 14px; min-height: 64px; }
+.row .mark { margin-top: 2px; }
+.row b { font-weight: 600; font-size: 1rem; line-height: 1.3; display: block; overflow-wrap: anywhere; }
+.row .meta { font-size: 0.8125rem; color: var(--muted); display: block; overflow-wrap: anywhere; }
+.row.is-deleted b { text-decoration: line-through; color: var(--muted); }
+.pri { font-weight: 600; color: var(--ink); }
+.pri-0 { color: var(--danger); }
+.row-actions { padding: 0 14px 12px 50px; }
+
+/* Bản đồ */
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.legend button { font: inherit; font-size: 0.8125rem; background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px; min-height: 40px; padding: 4px 12px; display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
+.legend button[aria-pressed="false"] { opacity: 0.45; text-decoration: line-through; }
+.map-box { height: min(62vh, 520px); min-height: 320px; border: 1px solid var(--line); border-radius: var(--r); background: #DDE7EA; overflow: hidden; position: relative; z-index: 0; }
+.map-box svg.plain { width: 100%; height: 100%; display: block; }
+.pin { background: none; border: 0; }
+.pin svg { width: 26px; height: 26px; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45)); }
+#myMapsBox { margin-top: 12px; }
+
+/* Bảng trượt */
+.sheet-wrap, .confirm-wrap { position: fixed; inset: 0; background: rgba(7, 30, 38, 0.55); z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
+.sheet { background: var(--paper); width: 100%; max-width: 760px; max-height: 92vh; display: flex; flex-direction: column; border-radius: 12px 12px 0 0; }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px 10px; border-bottom: 1px solid var(--line); }
+.sheet-head h2 { margin: 0; font-size: 1.1875rem; overflow-wrap: anywhere; }
+.sheet-body { overflow-y: auto; padding: 16px 16px 28px; -webkit-overflow-scrolling: touch; }
+.confirm-wrap { z-index: 60; align-items: center; padding: 20px; }
+.confirm { background: var(--surface); border-radius: var(--r); padding: 20px 18px; max-width: 420px; width: 100%; }
+.confirm p { font-size: 1rem; }
+
+.facts { margin: 0 0 16px; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 0.9375rem; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+.timeline { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 2px solid var(--line); }
+.timeline li { position: relative; padding: 0 0 18px 14px; }
+.timeline li::before { content: ""; position: absolute; left: -21px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--sea); border: 2px solid var(--paper); }
+.timeline .when { font-size: 0.8125rem; color: var(--muted); display: block; }
+.timeline .desc { white-space: pre-wrap; overflow-wrap: anywhere; margin: 4px 0 6px; }
+.thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
+.thumbs img { width: 132px; height: 99px; object-fit: cover; border-radius: var(--r); border: 1px solid var(--line); }
+.thumbs img.full { width: 100%; height: auto; }
+.addr-block { margin: 0 0 22px; }
+.addr-block h4 { margin: 0 0 8px; font-size: 0.9375rem; font-weight: 700; padding: 6px 10px; background: #DCEEF2; border-radius: 4px; overflow-wrap: anywhere; }
+.audit { list-style: none; margin: 0; padding: 0; }
+.audit li { padding: 10px 0; border-top: 1px solid var(--line); font-size: 0.875rem; overflow-wrap: anywhere; }
+.audit li:first-child { border-top: 0; }
+.audit .diff { color: var(--muted); display: block; margin-top: 2px; }
+.audit del { color: var(--danger); } .audit ins { color: var(--s-green); text-decoration: none; font-weight: 500; }
+
+.toast { position: fixed; left: 16px; right: 16px; bottom: calc(var(--tabs-h) + 16px + env(safe-area-inset-bottom, 0px)); z-index: 70; margin: 0 auto; max-width: 520px; background: var(--ink); color: #fff; padding: 12px 16px; border-radius: var(--r); font-size: 0.9375rem; font-weight: 500; }
+.toast.is-error { background: var(--danger); }
+.setup { background: var(--surface); border: 1.5px solid var(--danger); border-radius: var(--r); padding: 16px; }
+
+@media (min-width: 600px) {
+  .loc-actions { grid-template-columns: 1fr 1fr; }
+  .seg-opts { grid-template-columns: repeat(4, 1fr); }
+  .sheet-wrap { align-items: center; }
+  .sheet { border-radius: 12px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sheet { animation: rise 0.18s ease-out; }
+  @keyframes rise { from { transform: translateY(24px); } to { transform: none; } }
+}
+
+/* Bảng thống kê và danh sách dạng cây */
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.stat-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+.stat-table th, .stat-table td { padding: 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+.stat-table thead th { font-size: 0.8125rem; color: var(--muted); }
+.stat-table th:first-child { text-align: left; white-space: normal; }
+.stat-table tfoot th, .stat-table tfoot td { border-bottom: 0; font-weight: 700; }
+.tree-root { margin: 12px 0 0; }
+.tree { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); margin: 8px 0; }
+.tree > summary { cursor: pointer; padding: 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; list-style: none; }
+.tree > summary::-webkit-details-marker { display: none; }
+.tree .tree { margin: 6px 8px; }
+.tree .tree > summary { font-weight: 600; font-size: 0.9375rem; }
+.tree-title { overflow-wrap: anywhere; min-width: 0; }
+.tree .rows { margin: 0 0 8px; border: 0; border-radius: 0; background: none; }
+
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-row">
+    <div class="brand">
+      <p class="brand-title">Hiện trạng hạ tầng công viên tuyến biển</p>
+      <p class="brand-sub">Phường Nha Trang</p>
+    </div>
+    <button type="button" class="who" id="btnName" data-act="edit-name" aria-label="Đổi tên hiển thị">Đặt tên</button>
+  </div>
+  <div class="sync" id="syncStatus" role="status" aria-live="polite">Đang tải dữ liệu…</div>
+</header>
+
+<p class="open-note">
+  Ai có liên kết này cũng xem, ghi và sửa được dữ liệu. Mọi thay đổi đều được ghi vào nhật ký.
+  <button type="button" class="linklike" data-act="open-audit">Xem nhật ký</button>
+</p>
+
+<main id="main">
+
+  <!-- 1. TỔNG QUAN -->
+  <section class="view" id="v-overview" aria-labelledby="h-overview">
+    <h2 id="h-overview">Tổng quan</h2>
+    <div id="overviewBody"></div>
+  </section>
+
+  <!-- 2. GHI NHẬN -->
+  <section class="view" id="v-record" aria-labelledby="h-record" hidden>
+    <h2 id="h-record">Ghi nhận hạng mục</h2>
+    <div class="draft-note" id="draftNote" hidden></div>
+    <form id="recordForm" novalidate autocomplete="off">
+      <div class="field">
+        <label for="fSite">Vị trí</label>
+        <select id="fSite" name="siteId" required></select>
+      </div>
+      <div class="field">
+        <label for="fGroup">Nhóm</label>
+        <select id="fGroup" name="group" required></select>
+      </div>
+      <div class="field">
+        <label for="fItem">Hạng mục</label>
+        <input id="fItem" name="itemName" type="text" maxlength="120" required placeholder="Ví dụ: Đèn chiếu sáng trụ số 12">
+      </div>
+      <fieldset class="field seg" id="fPriority">
+        <legend>Ưu tiên</legend>
+      </fieldset>
+      <div class="field">
+        <label for="fAddress">Địa chỉ</label>
+        <input id="fAddress" name="address" type="text" maxlength="200" placeholder="Số nhà, tên đường hoặc mốc dễ nhận biết">
+      </div>
+
+      <fieldset class="field loc">
+        <legend>Tọa độ</legend>
+        <div class="loc-actions">
+          <button type="button" class="btn" data-act="gps" data-target="record">Lấy vị trí GPS</button>
+          <button type="button" class="btn ghost" data-act="toggle-link" data-target="record">Dán liên kết Google Maps</button>
+        </div>
+        <div class="loc-link" id="recLinkBox" hidden>
+          <label for="recLink">Liên kết hoặc tọa độ sao chép từ Google Maps</label>
+          <div class="inline">
+            <input id="recLink" type="text" inputmode="url" placeholder="https://maps.app.goo.gl/…">
+            <button type="button" class="btn" data-act="read-link" data-target="record">Đọc tọa độ</button>
+          </div>
+        </div>
+        <div class="latlng">
+          <div>
+            <label for="fLat">Vĩ độ</label>
+            <input id="fLat" name="lat" type="text" inputmode="decimal" placeholder="12.238800">
+          </div>
+          <div>
+            <label for="fLng">Kinh độ</label>
+            <input id="fLng" name="lng" type="text" inputmode="decimal" placeholder="109.196700">
+          </div>
+        </div>
+        <p class="hint" id="recLocInfo">Bấm "Lấy vị trí GPS", dán liên kết, hoặc gõ tọa độ vào hai ô trên.</p>
+      </fieldset>
+
+      <fieldset class="field seg" id="fStatus">
+        <legend>Trạng thái</legend>
+      </fieldset>
+      <div class="field">
+        <label for="fRound">Đợt khảo sát</label>
+        <input id="fRound" name="round" type="text" maxlength="60" list="roundList" placeholder="Ví dụ: Đợt 1 tháng 11/2026">
+        <datalist id="roundList"></datalist>
+      </div>
+      <div class="field">
+        <label for="fDesc">Mô tả hiện trạng</label>
+        <textarea id="fDesc" name="description" rows="3" maxlength="2000" placeholder="Hư hỏng gì, mức độ, kích thước ước lượng"></textarea>
+      </div>
+      <div class="field">
+        <span class="label">Ảnh (tối đa 2, tự nén trước khi gửi)</span>
+        <div class="photos" id="recPhotos"></div>
+        <label class="btn ghost file-btn">
+          Thêm ảnh
+          <input type="file" id="recPhotoInput" accept="image/*" multiple hidden>
+        </label>
+        <p class="error" id="recPhotoError" role="alert" hidden></p>
+      </div>
+
+      <p class="error" id="recError" role="alert" hidden></p>
+      <div class="form-actions">
+        <button type="submit" class="btn primary big" id="recSubmit">Gửi ghi nhận</button>
+        <button type="button" class="btn ghost" data-act="clear-draft">Xóa bản nháp</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 3. DANH SÁCH -->
+  <section class="view" id="v-list" aria-labelledby="h-list" hidden>
+    <h2 id="h-list">Danh sách hạng mục</h2>
+    <div class="filters">
+      <input id="qText" type="search" placeholder="Tìm hạng mục, địa chỉ, mô tả" aria-label="Tìm kiếm">
+      <div class="filter-row">
+        <select id="qStatus" aria-label="Lọc theo trạng thái"></select>
+        <select id="qGroup" aria-label="Lọc theo nhóm"></select>
+      </div>
+      <div class="filter-row">
+        <select id="qSite" aria-label="Lọc theo vị trí"></select>
+        <select id="qPriority" aria-label="Lọc theo ưu tiên"></select>
+      </div>
+      <label class="check"><input type="checkbox" id="qDeleted"> Hiện cả hạng mục đã xóa</label>
+    </div>
+    <p class="count" id="listCount"></p>
+    <div class="tree-root" id="listRows"></div>
+  </section>
+
+  <!-- 4. BẢN ĐỒ -->
+  <section class="view" id="v-map" aria-labelledby="h-map" hidden>
+    <h2 id="h-map">Bản đồ</h2>
+    <div class="legend" id="mapLegend"></div>
+    <div id="mapBox" class="map-box"></div>
+    <p class="hint" id="mapNote"></p>
+    <div id="myMapsBox"></div>
+  </section>
+
+  <!-- 5. VỊ TRÍ -->
+  <section class="view" id="v-sites" aria-labelledby="h-sites" hidden>
+    <h2 id="h-sites">Vị trí</h2>
+    <button type="button" class="btn" data-act="new-site">Thêm vị trí</button>
+    <ul class="rows" id="siteRows"></ul>
+  </section>
+
+  <!-- 6. XUẤT -->
+  <section class="view" id="v-export" aria-labelledby="h-export" hidden>
+    <h2 id="h-export">Xuất dữ liệu</h2>
+    <div class="stack">
+      <button type="button" class="btn" data-act="export-issues">Tải CSV hạng mục</button>
+      <button type="button" class="btn" data-act="export-checks">Tải CSV lượt khảo sát</button>
+      <button type="button" class="btn" data-act="export-kml">Tải KML (mở bằng Google Earth, My Maps)</button>
+      <label class="check"><input type="checkbox" id="exDeleted"> Gồm cả hạng mục đã xóa</label>
+      <p class="hint">Tệp CSV dùng mã UTF-8 có BOM để Excel đọc đúng tiếng Việt. Ô bắt đầu bằng = + - @ được thêm dấu nháy để Excel không chạy như công thức.</p>
+    </div>
+
+    <h3>Liên kết My Maps</h3>
+    <form id="cfgForm" class="stack" novalidate>
+      <label for="cfgMyMaps">Dán liên kết bản đồ My Maps của tổ (bắt đầu bằng https://www.google.com/maps/d/)</label>
+      <input id="cfgMyMaps" type="url" maxlength="500" placeholder="https://www.google.com/maps/d/…">
+      <p class="error" id="cfgError" role="alert" hidden></p>
+      <button type="submit" class="btn">Lưu liên kết</button>
+    </form>
+
+    <h3>Nhật ký thay đổi</h3>
+    <div class="stack">
+      <button type="button" class="btn" data-act="open-audit">Xem nhật ký thay đổi</button>
+      <p class="hint">Bản đầy đủ nằm ở sheet AuditLog trong bảng tính. Dữ liệu được lưu trên Google Sheets của chủ tài khoản, không lưu trên claude.ai.</p>
+    </div>
+  </section>
+
+</main>
+
+<nav class="tabs" aria-label="Màn hình">
+  <button type="button" data-view="overview" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Tổng quan</span></button>
+  <button type="button" data-view="record"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Ghi nhận</span></button>
+  <button type="button" data-view="list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg><span>Danh sách</span></button>
+  <button type="button" data-view="map"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5L9 4zM9 4v13.5M15 6.5V20"/></svg><span>Bản đồ</span></button>
+  <button type="button" data-view="sites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.500C5 14.900 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg><span>Vị trí</span></button>
+  <button type="button" data-view="export"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg><span>Xuất</span></button>
+</nav>
+
+<div class="sheet-wrap" id="sheetWrap" hidden>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-head">
+      <h2 id="sheetTitle"></h2>
+      <button type="button" class="btn ghost" data-act="close-sheet">Đóng</button>
+    </div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+</div>
+
+<div class="confirm-wrap" id="confirmWrap" hidden>
+  <div class="confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirmText">
+    <p id="confirmText"></p>
+    <div class="form-actions">
+      <button type="button" class="btn danger" id="confirmOk">Đồng ý</button>
+      <button type="button" class="btn ghost" id="confirmCancel">Hủy</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+/* Nếu phần mã chính không khởi động được, hiện lý do ngay trên thanh trạng thái để người dùng chụp lại. */
+(function () {
+  var root = document.documentElement;
+  function show(msg) {
+    if (root.getAttribute('data-ready')) return;
+    var el = document.getElementById('syncStatus');
+    if (!el) return;
+    el.className = 'sync is-error';
+    el.textContent = 'Trang chưa chạy được: ' + msg + ' Hãy chụp màn hình này gửi người phụ trách.';
+  }
+  window.addEventListener('error', function (e) { show((e && e.message) || 'lỗi không rõ.'); });
+  setTimeout(function () { show('mã không khởi động sau 8 giây. Thử tải lại trang.'); }, 8000);
+})();
+</script>
+<script>
+/* Toàn bộ mã nằm trong một hàm kín để không đụng tên với mã của trang chứa (Apps Script). */
+(function () {
+'use strict';
+
+/* ============================ CẤU HÌNH ============================
+   Nếu mở trang ngay từ Apps Script (liên kết …/exec) thì để trống.
+   Nếu đặt tệp này ở nơi khác (GitHub Pages, máy chủ của phường…), dán URL ứng dụng web Apps Script vào đây:
+   ví dụ 'https://script.google.com/macros/s/AKfy…/exec'                                              */
+const API_URL = 'https://script.google.com/macros/s/AKfycbwokGqRVsIdFgYwJu9iKM1KHJukGpQypyJLvYJ-Brc-W28_hRNMw_8mNIVitpSe9W4T/exec';
+
+'use strict';
+
+/* ============================ DANH MỤC ============================
+   STATUSES và PRIORITIES phải trùng với danh sách trong Code.gs.   */
+const STATUSES = ['Chưa xử lý', 'Đang xử lý', 'Đã khắc phục', 'Theo dõi'];
+const PRIORITIES = ['Khẩn cấp', 'Cao', 'Trung bình', 'Thấp'];
+const GROUPS = ['Giao thông, vỉa hè', 'Thoát nước', 'Chiếu sáng', 'Cây xanh, công viên', 'Cấp nước',
+  'Điện, viễn thông', 'Vệ sinh môi trường', 'Tiện ích công cộng', 'Khác'];
+
+const SYNC_MS = 12000;
+const MAX_PHOTOS = 2;
+const PHOTO_TARGET = 480000;   // ký tự base64, khoảng 350 KB
+const PHOTO_LIMIT = 690000;    // máy chủ từ chối trên 700.000
+const AREA = { latMin: 11.8, latMax: 12.7, lngMin: 108.8, lngMax: 109.5 }; // quanh Nha Trang, chỉ để cảnh báo
+const LEAFLET = 'https://unpkg.com/leaflet@1.9.4/dist/';
+const LEAFLET_CSS_SRI = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+const LEAFLET_JS_SRI = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+
+/* ============================ HÀM THUẦN ============================ */
+
+function esc(v) {
+  return String(v === null || v === undefined ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/** Bỏ dấu tiếng Việt để tìm kiếm không phân biệt dấu. */
+function norm(s) {
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/\s+/g, ' ').trim();
+}
+
+function validLatLng(lat, lng) {
+  return Number.isFinite(lat) && Number.isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+}
+
+/** Đọc tọa độ từ liên kết Google Maps đầy đủ hoặc từ chuỗi "vĩ độ, kinh độ". Trả null nếu không đọc được. */
+function parseCoords(text) {
+  let t = String(text || '').trim();
+  if (!t) return null;
+  try { t = decodeURIComponent(t); } catch (e) { /* giữ nguyên */ }
+  const n = '(-?\\d{1,3}(?:\\.\\d+)?)';
+  const pats = [
+    new RegExp('!3d' + n + '!4d' + n),
+    new RegExp('[?&](?:q|query|ll|sll|destination|daddr|center)=(?:loc:)?' + n + '\\s*,\\s*\\+?' + n),
+    new RegExp('/(?:search|place|dir)/' + n + ',\\s*\\+?' + n),
+    new RegExp('@' + n + ',' + n),
+    new RegExp('^\\(?\\s*' + n + '\\s*[,;]\\s*' + n + '\\s*\\)?$'),
+    new RegExp('^' + n + '\\s+' + n + '$')
+  ];
+  for (const p of pats) {
+    const m = p.exec(t);
+    if (m) {
+      const lat = Number(m[1]), lng = Number(m[2]);
+      if (validLatLng(lat, lng)) return { lat, lng };
+    }
+  }
+  const d = /(\d{1,2})°\s*(\d{1,2})['′]\s*(\d{1,2}(?:\.\d+)?)["″]\s*([NS])[\s+,]*(\d{1,3})°\s*(\d{1,2})['′]\s*(\d{1,2}(?:\.\d+)?)["″]\s*([EW])/i.exec(t);
+  if (d) {
+    let lat = Number(d[1]) + Number(d[2]) / 60 + Number(d[3]) / 3600;
+    let lng = Number(d[5]) + Number(d[6]) / 60 + Number(d[7]) / 3600;
+    if (d[4].toUpperCase() === 'S') lat = -lat;
+    if (d[8].toUpperCase() === 'W') lng = -lng;
+    lat = Math.round(lat * 1e6) / 1e6; lng = Math.round(lng * 1e6) / 1e6;
+    if (validLatLng(lat, lng)) return { lat, lng };
+  }
+  return null;
+}
+
+function firstUrl(text) {
+  const m = /https?:\/\/\S+/.exec(String(text || ''));
+  return m ? m[0] : '';
+}
+
+function isShortMapLink(url) {
+  return /^https:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps)\/[A-Za-z0-9_\-\/?=&%.]+$/.test(url);
+}
+
+/** Liên kết My Maps: chỉ https, máy chủ www.google.com, đường dẫn /maps/d/. */
+function validMyMaps(url) {
+  if (typeof url !== 'string' || url.length > 500 || /[\s<>"'\\]/.test(url)) return false;
+  if (url.indexOf('https://www.google.com/maps/d/') !== 0) return false;
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' && u.hostname === 'www.google.com' && u.pathname.indexOf('/maps/d/') === 0 && !u.username && !u.password;
+  } catch (e) { return false; }
+}
+
+/** Đọc một ô tọa độ người dùng gõ tay. Chấp nhận dấu phẩy thập phân. */
+function parseNum(s) {
+  const t = String(s === null || s === undefined ? '' : s).trim().replace(',', '.');
+  if (!/^-?\d{1,3}(\.\d+)?$/.test(t)) return NaN;
+  return Number(t);
+}
+
+function checkLatLngText(latText, lngText) {
+  const a = String(latText || '').trim(), b = String(lngText || '').trim();
+  if (!a && !b) return { empty: true };
+  if (!a || !b) return { error: 'Cần nhập đủ cả vĩ độ và kinh độ, hoặc để trống cả hai.' };
+  const lat = parseNum(a), lng = parseNum(b);
+  if (!Number.isFinite(lat)) return { error: 'Vĩ độ phải là số, ví dụ 12.238800.' };
+  if (!Number.isFinite(lng)) return { error: 'Kinh độ phải là số, ví dụ 109.196700.' };
+  if (lat < -90 || lat > 90) return { error: 'Vĩ độ phải nằm trong khoảng -90 đến 90.' };
+  if (lng < -180 || lng > 180) return { error: 'Kinh độ phải nằm trong khoảng -180 đến 180.' };
+  let warn = '';
+  if (lat >= AREA.lngMin && lat <= AREA.lngMax && lng >= AREA.latMin && lng <= AREA.latMax) {
+    warn = 'Có vẻ vĩ độ và kinh độ đang bị đảo chỗ cho nhau.';
+  } else if (lat < AREA.latMin || lat > AREA.latMax || lng < AREA.lngMin || lng > AREA.lngMax) {
+    warn = 'Tọa độ này nằm ngoài khu vực Nha Trang.';
+  }
+  return { lat, lng, warn };
+}
+
+/** Một ô CSV: luôn bọc trong nháy kép; ô chữ bắt đầu bằng = + - @ được thêm dấu nháy đơn để chặn công thức. */
+function csvCell(v) {
+  if (typeof v === 'number' && Number.isFinite(v)) return String(v);
+  let s = String(v === null || v === undefined ? '' : v);
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return '"' + s.replace(/"/g, '""') + '"';
+}
+
+function toCsv(header, rows) {
+  return '\uFEFF' + [header].concat(rows).map(r => r.map(csvCell).join(',')).join('\r\n') + '\r\n';
+}
+
+function xml(v) {
+  return String(v === null || v === undefined ? '' : v)
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function photoLabel(ref) {
+  return String(ref || '').indexOf('data:') === 0 ? '(ảnh lưu trong bảng tính)' : String(ref || '');
+}
+
+const DTF = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false
+});
+function dtParts(value) {
+  const d = value instanceof Date ? value : new Date(value);
+  if (!value || isNaN(d)) return null;
+  const p = {};
+  DTF.formatToParts(d).forEach(x => { p[x.type] = x.value; });
+  if (p.hour === '24') p.hour = '00';
+  return p;
+}
+function fmtDT(value) {
+  const p = dtParts(value);
+  return p ? `${p.hour}:${p.minute} ${p.day}/${p.month}/${p.year}` : String(value || '');
+}
+function fmtHM(value) {
+  const p = dtParts(value);
+  return p ? `${p.hour}:${p.minute}` : '';
+}
+
+function uid(prefix) {
+  const a = new Uint8Array(9);
+  crypto.getRandomValues(a);
+  let s = '';
+  a.forEach(b => { s += (b % 36).toString(36); });
+  return prefix + '-' + Date.now().toString(36) + '-' + s;
+}
+
+/* ============================ TRẠNG THÁI ============================ */
+
+const S = {
+  sites: new Map(), issues: new Map(), checks: new Map(),
+  byIssue: new Map(),
+  config: { myMapsUrl: '' },
+  rev: 0, lastSync: null, cacheAt: null, syncError: '', loaded: false,
+  view: 'overview', sheet: null
+};
+const R = { issueId: '', checkId: '', photos: [] };        // bản nháp ghi nhận
+const RC = { issueId: '', checkId: '', photos: [] };       // lượt khảo sát lại đang soạn
+const locState = { record: { accuracy: null, gpsTime: '' }, edit: { accuracy: null, gpsTime: '' } };
+const photoCache = new Map();
+const mapState = { mode: null, map: null, layer: null, fitted: false, hidden: new Set(), loading: null };
+
+const $ = (sel, root) => (root || document).querySelector(sel);
+const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+
+const store = {
+  get(key) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
+  set(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); return true; } catch (e) { return false; } },
+  del(key) { try { localStorage.removeItem(key); } catch (e) { /* bỏ qua */ } }
+};
+
+function getName() { return String(store.get('ht:name') || '').trim(); }
+
+function reindex() {
+  S.byIssue = new Map();
+  S.checks.forEach(c => {
+    if (!S.byIssue.has(c.issueId)) S.byIssue.set(c.issueId, []);
+    S.byIssue.get(c.issueId).push(c);
+  });
+  // rev do máy chủ cấp tăng dần theo thứ tự ghi, nên xếp theo rev là đúng cả khi hai lượt trùng giây
+  S.byIssue.forEach(list => list.sort(newestFirst));
+}
+function newestFirst(a, b) {
+  return ((b.rev || 0) - (a.rev || 0)) || String(b.createdAt).localeCompare(String(a.createdAt));
+}
+function checksOf(issueId) { return S.byIssue.get(issueId) || []; }
+function liveIssues() { return Array.from(S.issues.values()).filter(i => !i.deletedAt); }
+function siteName(id) { const s = S.sites.get(id); return s ? s.name : '(vị trí không rõ)'; }
+function hasCoords(i) { return typeof i.lat === 'number' && typeof i.lng === 'number' && validLatLng(i.lat, i.lng); }
+function lastActivity(i) { const c = checksOf(i.id)[0]; return c ? c.createdAt : i.createdAt; }
+
+/* ============================ KẾT NỐI MÁY CHỦ ============================ */
+
+const hasGas = typeof google !== 'undefined' && google.script && google.script.run;
+const hasBackend = !!hasGas || !!API_URL;
+
+function withTimeout(promise, ms) {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error('Quá thời gian chờ máy chủ.')), ms);
+    promise.then(v => { clearTimeout(t); resolve(v); }, e => { clearTimeout(t); reject(e); });
+  });
+}
+
+/** Gọi máy chủ. Chỉ trả kết quả khi máy chủ xác nhận ok === true; mọi trường hợp khác đều ném lỗi. */
+async function call(action, data, opts) {
+  opts = opts || {};
+  const req = { action, data: data || {} };
+  if (opts.write) req.actor = getName();
+  const ms = opts.timeout || 30000;
+  let res;
+  if (hasGas) {
+    const text = await withTimeout(new Promise((ok, no) => {
+      google.script.run.withSuccessHandler(ok).withFailureHandler(no).api(JSON.stringify(req));
+    }), ms);
+    res = JSON.parse(text);
+  } else {
+    if (!API_URL) throw new Error('Chưa cấu hình địa chỉ máy chủ dữ liệu.');
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), ms);
+    try {
+      let resp;
+      if (opts.write) {
+        // text/plain để trình duyệt không gửi yêu cầu dò trước (preflight) mà Apps Script không trả lời
+        resp = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(req), redirect: 'follow', signal: ctl.signal });
+      } else {
+        const q = new URLSearchParams(Object.assign({ action }, data || {}));
+        resp = await fetch(API_URL + '?' + q.toString(), { redirect: 'follow', signal: ctl.signal });
+      }
+      if (!resp.ok) throw new Error('Máy chủ trả lỗi ' + resp.status + '.');
+      res = await resp.json();
+    } catch (e) {
+      if (e && e.name === 'AbortError') throw new Error('Quá thời gian chờ máy chủ.');
+      if (e instanceof TypeError) throw new Error('Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.');
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  if (!res || res.ok !== true) throw new Error((res && res.error) || 'Máy chủ không xác nhận.');
+  return res;
+}
+
+let syncing = false, syncTimer = null, failCount = 0;
+
+async function sync() {
+  if (syncing || !hasBackend) return;
+  syncing = true;
+  try {
+    const r = await call('sync', { since: S.rev });
+    let changed = false;
+    if (r.full) { S.sites.clear(); S.issues.clear(); S.checks.clear(); changed = true; }
+    (r.sites || []).forEach(o => { S.sites.set(o.id, o); changed = true; });
+    (r.issues || []).forEach(o => { S.issues.set(o.id, o); changed = true; });
+    (r.checks || []).forEach(o => { S.checks.set(o.id, o); changed = true; });
+    if (r.config && r.config.myMapsUrl !== S.config.myMapsUrl) { S.config = { myMapsUrl: validMyMaps(r.config.myMapsUrl) ? r.config.myMapsUrl : '' }; changed = true; }
+    S.rev = Number(r.rev) || 0;
+    S.lastSync = new Date();
+    S.syncError = '';
+    failCount = 0;
+    const first = !S.loaded;
+    S.loaded = true;
+    if (changed || first) { reindex(); saveCache(); renderAll(); }
+  } catch (e) {
+    S.syncError = e.message || 'Lỗi không rõ';
+    failCount++;
+  } finally {
+    syncing = false;
+    renderSync();
+  }
+}
+
+function schedule() {
+  clearTimeout(syncTimer);
+  const wait = Math.min(SYNC_MS * Math.pow(2, Math.min(failCount, 3)), 60000);
+  syncTimer = setTimeout(async () => {
+    if (!document.hidden) await sync();
+    schedule();
+  }, wait);
+}
+
+function syncNow() { sync().then(schedule); }
+
+function saveCache() {
+  const data = { at: Date.now(), sites: Array.from(S.sites.values()), issues: Array.from(S.issues.values()), checks: Array.from(S.checks.values()), config: S.config };
+  if (!store.set('ht:cache', data)) store.del('ht:cache');
+}
+
+function loadCache() {
+  const c = store.get('ht:cache');
+  if (!c || !Array.isArray(c.issues)) return;
+  (c.sites || []).forEach(o => S.sites.set(o.id, o));
+  (c.issues || []).forEach(o => S.issues.set(o.id, o));
+  (c.checks || []).forEach(o => S.checks.set(o.id, o));
+  if (c.config && validMyMaps(c.config.myMapsUrl)) S.config = { myMapsUrl: c.config.myMapsUrl };
+  S.cacheAt = c.at;
+  reindex();
+}
+
+/** Đưa kết quả máy chủ vừa xác nhận vào màn hình, rồi đồng bộ lại ngay. */
+function applyWrite(r) {
+  if (r.site) S.sites.set(r.site.id, r.site);
+  if (r.issue) S.issues.set(r.issue.id, r.issue);
+  if (r.check) S.checks.set(r.check.id, r.check);
+  if (r.config) S.config = { myMapsUrl: validMyMaps(r.config.myMapsUrl) ? r.config.myMapsUrl : '' };
+  reindex();
+  saveCache();
+  renderAll();
+  syncNow();
+}
+
+function renderSync() {
+  const el = $('#syncStatus');
+  el.className = 'sync';
+  if (!hasBackend) { el.classList.add('is-error'); el.textContent = 'Chưa nối máy chủ dữ liệu'; return; }
+  if (S.syncError) {
+    el.classList.add('is-error');
+    const when = S.lastSync ? 'Dữ liệu lúc ' + fmtHM(S.lastSync) + '.' : (S.cacheAt ? 'Đang xem bản lưu trên máy lúc ' + fmtDT(S.cacheAt) + '.' : 'Chưa tải được dữ liệu.');
+    el.innerHTML = '<span>Mất kết nối. ' + esc(when) + ' Lý do: ' + esc(String(S.syncError).slice(0, 140)) + '</span><button type="button" data-act="retry-sync">Thử lại</button>';
+    el.title = '';
+  } else if (S.lastSync) {
+    el.textContent = 'Cập nhật lần cuối lúc ' + fmtHM(S.lastSync);
+    el.title = '';
+  } else {
+    el.classList.add('is-loading');
+    el.textContent = S.cacheAt ? 'Đang tải dữ liệu mới… (đang xem bản lưu lúc ' + fmtDT(S.cacheAt) + ')' : 'Đang tải dữ liệu…';
+  }
+}
+
+/* ============================ THÀNH PHẦN GIAO DIỆN ============================ */
+
+const SHAPES = [
+  '<path d="M12 3 22 21H2z"/>',
+  '<path d="M12 2 22 12 12 22 2 12z"/>',
+  '<circle cx="12" cy="12" r="9.5"/>',
+  '<rect x="3" y="3" width="18" height="18" rx="1.5"/>'
+];
+function statusIndex(status) { const i = STATUSES.indexOf(status); return i < 0 ? 3 : i; }
+function mark(status) {
+  const k = statusIndex(status);
+  return `<svg class="mark st-${k}" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="#fff" stroke-width="1.5" stroke-linejoin="round">${SHAPES[k]}</svg>`;
+}
+function chip(status) {
+  return `<span class="status st-${statusIndex(status)}">${mark(status)}${esc(status)}</span>`;
+}
+function segHtml(name, options, value, withMark) {
+  return '<div class="seg-opts">' + options.map(o =>
+    `<label><input type="radio" name="${name}" value="${esc(o)}"${o === value ? ' checked' : ''}>${withMark ? mark(o) : ''}<span>${esc(o)}</span></label>`
+  ).join('') + '</div>';
+}
+function optionsHtml(list, value, firstLabel) {
+  return (firstLabel !== undefined ? `<option value="">${esc(firstLabel)}</option>` : '') +
+    list.map(o => `<option value="${esc(o.value)}"${o.value === value ? ' selected' : ''}>${esc(o.label)}</option>`).join('');
+}
+/** Chỉ dựng lại danh sách chọn khi nội dung thật sự đổi, để không làm đóng ô chọn đang mở lúc đồng bộ. */
+const lastOptions = new WeakMap();
+function setOptions(el, html) {
+  if (lastOptions.get(el) === html) return;
+  lastOptions.set(el, html);
+  el.innerHTML = html;
+}
+function sitesSorted() {
+  return Array.from(S.sites.values()).sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+}
+function allGroups() {
+  const set = new Set(GROUPS);
+  S.issues.forEach(i => { if (i.group) set.add(i.group); });
+  return Array.from(set);
+}
+
+let toastTimer = null;
+function toast(msg, isError) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.className = 'toast' + (isError ? ' is-error' : '');
+  el.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.hidden = true; }, isError ? 7000 : 4000);
+}
+
+function showError(el, msg) {
+  el.textContent = msg || '';
+  el.hidden = !msg;
+  if (msg) el.scrollIntoView({ block: 'nearest' });
+}
+
+let lastFocus = null;
+function openSheet(title, html, info) {
+  if (!S.sheet) lastFocus = document.activeElement;
+  S.sheet = info || { type: 'other' };
+  $('#sheetTitle').textContent = title;
+  $('#sheetBody').innerHTML = html;
+  $('#sheetBody').scrollTop = 0;
+  $('#sheetWrap').hidden = false;
+  document.body.style.overflow = 'hidden';
+  const focusable = $('#sheetBody [autofocus]') || $('#sheetWrap [data-act="close-sheet"]');
+  if (focusable) focusable.focus();
+}
+function closeSheet() {
+  S.sheet = null;
+  $('#sheetWrap').hidden = true;
+  $('#sheetBody').innerHTML = '';
+  document.body.style.overflow = '';
+  if (lastFocus && lastFocus.focus) lastFocus.focus();
+}
+
+let confirmResolve = null;
+function confirmBox(text, okLabel, danger) {
+  $('#confirmText').textContent = text;
+  const ok = $('#confirmOk');
+  ok.textContent = okLabel || 'Đồng ý';
+  ok.className = 'btn ' + (danger === false ? 'primary' : 'danger');
+  $('#confirmWrap').hidden = false;
+  $('#confirmCancel').focus();
+  return new Promise(resolve => { confirmResolve = resolve; });
+}
+function closeConfirm(answer) {
+  $('#confirmWrap').hidden = true;
+  if (confirmResolve) { const r = confirmResolve; confirmResolve = null; r(answer); }
+}
+
+function requireName() {
+  if (getName()) return true;
+  openNameSheet('Hãy đặt tên hiển thị trước khi ghi dữ liệu.');
+  return false;
+}
+function openNameSheet(note) {
+  openSheet('Tên hiển thị', `
+    <form data-form="name" novalidate>
+      ${note ? `<p>${esc(note)}</p>` : ''}
+      <div class="field">
+        <label for="nmInput">Tên của anh/chị (hiện bên cạnh mỗi lượt ghi và trong nhật ký)</label>
+        <input id="nmInput" type="text" maxlength="60" value="${esc(getName())}" placeholder="Ví dụ: Hòa – Tổ hạ tầng" autofocus>
+        <p class="hint">Tên chỉ lưu trên máy này và trong bảng tính. Trang không thu email hay thông tin cá nhân nào khác.</p>
+      </div>
+      <p class="error" id="nmError" role="alert" hidden></p>
+      <button type="submit" class="btn primary">Lưu tên</button>
+    </form>`, { type: 'form' });
+}
+function renderName() {
+  const n = getName();
+  $('#btnName').textContent = n || 'Đặt tên';
+}
+
+/* ============================ CÁC MÀN HÌNH ============================ */
+
+function setView(view) {
+  S.view = view;
+  $$('.view').forEach(v => { v.hidden = v.id !== 'v-' + view; });
+  $$('.tabs button').forEach(b => { if (b.dataset.view === view) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+  window.scrollTo(0, 0);
+  renderView();
+}
+
+function renderAll() {
+  renderView();
+  if (S.sheet && S.sheet.type === 'issue') renderIssueSheet(S.sheet.id, true);
+  if (S.sheet && S.sheet.type === 'site') renderSiteSheet(S.sheet.id, true);
+}
+
+function renderView() {
+  if (S.view === 'overview') renderOverview();
+  else if (S.view === 'record') renderRecordOptions();
+  else if (S.view === 'list') renderList();
+  else if (S.view === 'map') renderMap();
+  else if (S.view === 'sites') renderSites();
+  else if (S.view === 'export') renderExport();
+}
+
+function renderOverview() {
+  const box = $('#overviewBody');
+  if (!hasBackend) {
+    box.innerHTML = `<div class="setup"><p><b>Trang chưa được nối với máy chủ dữ liệu.</b></p>
+      <p>Mở trang qua liên kết ứng dụng web Apps Script (…/exec), hoặc dán URL đó vào dòng <code>API_URL</code> ở cuối tệp này. Xem tệp HUONG_DAN.md.</p></div>`;
+    return;
+  }
+  const issues = liveIssues();
+  if (!S.loaded && !issues.length) { box.innerHTML = '<p class="hint">Đang tải dữ liệu…</p>'; return; }
+  if (!issues.length) {
+    box.innerHTML = `<div class="empty"><p>Chưa có hạng mục nào được ghi nhận.</p>
+      <button type="button" class="btn primary" data-act="go" data-view="record">Ghi nhận hạng mục đầu tiên</button></div>`;
+    return;
+  }
+  const ids = new Set(issues.map(i => i.id));
+  let checkCount = 0;
+  S.checks.forEach(c => { if (ids.has(c.issueId)) checkCount++; });
+  const byStatus = STATUSES.map(s => issues.filter(i => i.status === s).length);
+  const other = issues.length - byStatus.reduce((a, b) => a + b, 0);
+  const groups = new Map();
+  issues.forEach(i => groups.set(i.group, (groups.get(i.group) || 0) + 1));
+  const groupRows = Array.from(groups.entries()).sort((a, b) => b[1] - a[1]);
+  const maxG = groupRows.length ? groupRows[0][1] : 1;
+
+  box.innerHTML = `
+    <div class="totals">
+      <div><b>${issues.length}</b><span>hạng mục</span></div>
+      <div><b>${checkCount}</b><span>lượt khảo sát</span></div>
+    </div>
+    <h3 style="margin-top:0">Theo trạng thái</h3>
+    <div class="stackbar" role="img" aria-label="Tỷ lệ hạng mục theo trạng thái">
+      ${byStatus.map((n, k) => n ? `<i class="st-${k}" style="width:${(n / issues.length * 100).toFixed(2)}%"></i>` : '').join('')}
+    </div>
+    <ul class="breakdown">
+      ${STATUSES.map((s, k) => `<li><button type="button" data-act="filter-status" data-v="${esc(s)}">${chip(s)}<span class="n">${byStatus[k]}</span></button></li>`).join('')}
+      ${other ? `<li><div class="line"><span>Trạng thái khác</span><span class="n">${other}</span></div></li>` : ''}
+    </ul>
+    <h3>Theo nhóm</h3>
+    <ul class="breakdown">
+      ${groupRows.map(([g, n]) => `<li><button type="button" data-act="filter-group" data-v="${esc(g)}"><span>${esc(g)}</span><span class="n">${n}</span>
+        <span class="bar"><i style="width:${(n / maxG * 100).toFixed(1)}%"></i></span></button></li>`).join('')}
+    </ul>
+    <h3>Bảng thống kê theo nhóm</h3>
+    ${statTable(issues, byStatus)}`;
+}
+
+function statTable(issues, byStatus) {
+  const gName = i => i.group || '(chưa có nhóm)';
+  const names = Array.from(new Set(issues.map(gName))).sort(cmpVi);
+  const head = STATUSES.map(s => `<th>${esc(s)}</th>`).join('');
+  const body = names.map(g => {
+    const rows = issues.filter(i => gName(i) === g);
+    return `<tr><th scope="row">${esc(g)}</th>${STATUSES.map(s => `<td>${rows.filter(i => i.status === s).length}</td>`).join('')}<td><b>${rows.length}</b></td></tr>`;
+  }).join('');
+  const foot = `<tr><th scope="row">Tổng cộng</th>${byStatus.map(n => `<td>${n}</td>`).join('')}<td><b>${issues.length}</b></td></tr>`;
+  return `<div class="table-wrap"><table class="stat-table"><thead><tr><th>Nhóm</th>${head}<th>Tổng</th></tr></thead>
+    <tbody>${body}</tbody><tfoot>${foot}</tfoot></table></div>`;
+}
+
+/* ---------- Danh sách ---------- */
+
+function renderListFilters() {
+  const keep = id => $(id).value;
+  setOptions($('#qStatus'), optionsHtml(STATUSES.map(s => ({ value: s, label: s })), keep('#qStatus'), 'Mọi trạng thái'));
+  setOptions($('#qGroup'), optionsHtml(allGroups().map(s => ({ value: s, label: s })), keep('#qGroup'), 'Mọi nhóm'));
+  setOptions($('#qSite'), optionsHtml(sitesSorted().map(s => ({ value: s.id, label: s.name })), keep('#qSite'), 'Mọi vị trí'));
+  setOptions($('#qPriority'), optionsHtml(PRIORITIES.map(s => ({ value: s, label: 'Ưu tiên: ' + s })), keep('#qPriority'), 'Mọi mức ưu tiên'));
+}
+
+function issueRow(i) {
+  const cs = checksOf(i.id);
+  const last = cs[0];
+  const where = [siteName(i.siteId), i.address].filter(Boolean).join(', ');
+  const pk = PRIORITIES.indexOf(i.priority);
+  return `<li>
+    <button type="button" class="row${i.deletedAt ? ' is-deleted' : ''}" data-act="open-issue" data-id="${esc(i.id)}">
+      ${mark(i.status)}
+      <span>
+        <b>${esc(i.item)}</b>
+        <span class="meta">${esc(i.group)}. ${esc(where)}</span>
+        <span class="meta">GPS: ${hasCoords(i) ? i.lat.toFixed(6) + ', ' + i.lng.toFixed(6) + (typeof i.accuracy === 'number' ? ' (sai số ' + i.accuracy + ' m)' : '') : 'chưa có tọa độ'}</span>
+        <span class="meta">${i.deletedAt ? 'Đã xóa lúc ' + esc(fmtDT(i.deletedAt)) + ' bởi ' + esc(i.deletedBy) : chip(i.status) + ` &nbsp;<span class="pri pri-${pk}">Ưu tiên ${esc(String(i.priority).toLowerCase())}</span>`}</span>
+        <span class="meta">${cs.length} lượt khảo sát${last ? ', mới nhất ' + esc(fmtDT(last.createdAt)) + ' bởi ' + esc(last.recorder) : ''}</span>
+      </span>
+    </button>
+    ${i.deletedAt ? '' : `<div class="row-actions"><button type="button" class="btn small" data-act="recheck" data-id="${esc(i.id)}">Khảo sát lại</button></div>`}
+  </li>`;
+}
+
+function filteredIssues() {
+  const q = norm($('#qText').value);
+  const st = $('#qStatus').value, g = $('#qGroup').value, site = $('#qSite').value, pr = $('#qPriority').value;
+  const showDeleted = $('#qDeleted').checked;
+  return Array.from(S.issues.values()).filter(i => {
+    if (i.deletedAt && !showDeleted) return false;
+    if (st && i.status !== st) return false;
+    if (g && i.group !== g) return false;
+    if (site && i.siteId !== site) return false;
+    if (pr && i.priority !== pr) return false;
+    if (q) {
+      const last = checksOf(i.id)[0];
+      const hay = norm([i.item, i.address, i.group, siteName(i.siteId), i.recorder, last ? last.description : '', last ? last.recorder : '', last ? last.round : ''].join(' '));
+      if (hay.indexOf(q) < 0) return false;
+    }
+    return true;
+  }).sort((a, b) => String(lastActivity(b)).localeCompare(String(lastActivity(a))));
+}
+
+const openKeys = new Set();
+function cmpVi(a, b) { return String(a).localeCompare(String(b), 'vi'); }
+function addrOf(i) { return i.address || siteName(i.siteId) || '(chưa có địa chỉ)'; }
+
+function detailsBox(key, summary, inner) {
+  return `<details class="tree" data-key="${esc(key)}"${openKeys.has(key) ? ' open' : ''}><summary>${summary}</summary>${inner}</details>`;
+}
+
+function sumOf(map) { let n = 0; map.forEach(v => { n += v instanceof Map ? sumOf(v) : v.length; }); return n; }
+
+/** Cây: Nhóm công việc → Địa chỉ → Nội dung hư hỏng → các ghi nhận (thứ tự theo danh sách). */
+function renderTree(list) {
+  const tree = new Map();
+  list.forEach(i => {
+    const g = i.group || '(chưa có nhóm)', a = addrOf(i), it = i.item || '(chưa có tên)';
+    if (!tree.has(g)) tree.set(g, new Map());
+    const ga = tree.get(g);
+    if (!ga.has(a)) ga.set(a, new Map());
+    const gi = ga.get(a);
+    if (!gi.has(it)) gi.set(it, []);
+    gi.get(it).push(i);
+  });
+  return Array.from(tree.keys()).sort(cmpVi).map(g => {
+    const addrs = tree.get(g);
+    const inner = Array.from(addrs.keys()).sort(cmpVi).map(a => {
+      const items = addrs.get(a);
+      const innerI = Array.from(items.keys()).sort(cmpVi).map(it => {
+        const recs = items.get(it);
+        return detailsBox(`i|${g}|${a}|${it}`,
+          `<span class="tree-title">${esc(it)}</span><span class="meta">${recs.length} ghi nhận</span>`,
+          `<ul class="rows">${recs.map(issueRow).join('')}</ul>`);
+      }).join('');
+      return detailsBox(`a|${g}|${a}`,
+        `<span class="tree-title">${esc(a)}</span><span class="meta">${sumOf(items)} ghi nhận</span>`, innerI);
+    }).join('');
+    return detailsBox(`g|${g}`,
+      `<span class="tree-title">${esc(g)}</span><span class="meta">${sumOf(addrs)} ghi nhận</span>`, inner);
+  }).join('');
+}
+
+let treeWired = false;
+function renderList() {
+  renderListFilters();
+  const list = filteredIssues();
+  const total = $('#qDeleted').checked ? S.issues.size : liveIssues().length;
+  $('#listCount').textContent = total ? `Đang hiện ${list.length} trên ${total} hạng mục` : 'Chưa có hạng mục nào.';
+  $('#listRows').innerHTML = renderTree(list.slice(0, 300));
+  if (!treeWired) {
+    treeWired = true;
+    // Ghi nhớ nhóm nào đang mở để lần đồng bộ sau không làm đóng lại.
+    $('#listRows').addEventListener('toggle', e => {
+      const d = e.target;
+      if (!d.dataset || !d.dataset.key) return;
+      if (d.open) openKeys.add(d.dataset.key); else openKeys.delete(d.dataset.key);
+    }, true);
+  }
+  if (list.length > 300) $('#listCount').textContent += '. Chỉ hiện 300 mục mới nhất, hãy lọc để thu hẹp.';
+}
+
+/* ---------- Chi tiết hạng mục ---------- */
+
+function photoHtml(ref, n) {
+  const s = String(ref || '');
+  let src = '';
+  if (/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s)) src = s;
+  else if (photoCache.has(s)) src = photoCache.get(s);
+  if (src) return `<img src="${src}" alt="Ảnh hiện trạng ${n}" data-act="zoom-photo" loading="lazy">`;
+  const m = /^https:\/\/drive\.google\.com\/file\/d\/([A-Za-z0-9_-]{10,100})\//.exec(s);
+  if (!m) return '';
+  return `<button type="button" class="btn small ghost" data-act="load-photo" data-pid="${m[1]}" data-ref="${esc(s)}">Xem ảnh ${n}</button>`;
+}
+
+function checkItemHtml(c, showItem) {
+  const issue = S.issues.get(c.issueId);
+  return `<li>
+    <span class="when">${esc(fmtDT(c.createdAt))}, ${esc(c.recorder)}${c.round ? ', ' + esc(c.round) : ''}</span>
+    ${showItem && issue ? `<button type="button" class="linklike" data-act="open-issue" data-id="${esc(issue.id)}">${esc(issue.item)}</button><br>` : ''}
+    ${chip(c.status)}
+    ${c.description ? `<p class="desc">${esc(c.description)}</p>` : ''}
+    <div class="thumbs">${(c.photos || []).map((p, k) => photoHtml(p, k + 1)).join('')}</div>
+  </li>`;
+}
+
+function renderIssueSheet(id, keepScroll) {
+  const i = S.issues.get(id);
+  if (!i) { closeSheet(); return; }
+  const top = keepScroll ? $('#sheetBody').scrollTop : 0;
+  const cs = checksOf(id);
+  const coords = hasCoords(i);
+  const html = `
+    ${i.deletedAt ? `<p class="error">Hạng mục này đã bị xóa lúc ${esc(fmtDT(i.deletedAt))} bởi ${esc(i.deletedBy)}. Dữ liệu vẫn còn trong bảng tính.</p>` : ''}
+    <dl class="facts">
+      <dt>Trạng thái</dt><dd>${chip(i.status)}</dd>
+      <dt>Ưu tiên</dt><dd>${esc(i.priority)}</dd>
+      <dt>Nhóm</dt><dd>${esc(i.group)}</dd>
+      <dt>Vị trí</dt><dd>${esc(siteName(i.siteId))}</dd>
+      <dt>Địa chỉ</dt><dd>${esc(i.address) || '(chưa có)'}</dd>
+      <dt>Tọa độ</dt><dd>${coords ? `<a href="https://www.google.com/maps?q=${i.lat},${i.lng}" target="_blank" rel="noopener noreferrer">${i.lat.toFixed(6)}, ${i.lng.toFixed(6)}</a>${i.accuracy !== null && i.accuracy !== undefined ? ' (sai số khoảng ' + esc(i.accuracy) + ' m)' : ''}` : '(chưa có)'}</dd>
+      <dt>Ghi nhận</dt><dd>${esc(fmtDT(i.createdAt))}, ${esc(i.recorder)}</dd>
+    </dl>
+    <div class="form-actions" style="margin-bottom:22px">
+      ${i.deletedAt
+      ? `<button type="button" class="btn primary" data-act="restore-issue" data-id="${esc(id)}">Khôi phục hạng mục</button>`
+      : `<button type="button" class="btn primary" data-act="recheck" data-id="${esc(id)}">Khảo sát lại</button>
+         <button type="button" class="btn" data-act="edit-issue" data-id="${esc(id)}">Sửa thông tin</button>
+         <button type="button" class="btn ghost" data-act="delete-issue" data-id="${esc(id)}">Xóa</button>`}
+      <button type="button" class="btn ghost" data-act="open-audit" data-id="${esc(id)}">Nhật ký</button>
+    </div>
+    <h3 style="margin-top:0">Lịch sử khảo sát (${cs.length} lượt)</h3>
+    <ol class="timeline">${cs.map(c => checkItemHtml(c, false)).join('')}</ol>`;
+  if (keepScroll && S.sheet && S.sheet.type === 'issue' && S.sheet.id === id) {
+    $('#sheetBody').innerHTML = html;
+    $('#sheetTitle').textContent = i.item;
+    $('#sheetBody').scrollTop = top;
+  } else {
+    openSheet(i.item, html, { type: 'issue', id });
+  }
+}
+
+async function loadPhoto(btn) {
+  const ref = btn.dataset.ref, pid = btn.dataset.pid;
+  btn.disabled = true;
+  btn.textContent = 'Đang tải ảnh…';
+  try {
+    const r = await call('photo', { id: pid }, { timeout: 45000 });
+    if (!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(r.dataUrl)) throw new Error('Ảnh không hợp lệ.');
+    photoCache.set(ref, r.dataUrl);
+    const img = document.createElement('img');
+    img.src = r.dataUrl;
+    img.alt = 'Ảnh hiện trạng';
+    img.dataset.act = 'zoom-photo';
+    btn.replaceWith(img);
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = 'Tải lại ảnh';
+    toast('Chưa tải được ảnh: ' + e.message, true);
+  }
+}
+
+/* ---------- Ảnh: nén trước khi gửi ---------- */
+
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Không đọc được tệp ảnh "' + file.name + '".')); };
+    img.src = url;
+  });
+}
+
+async function compressPhoto(file) {
+  if (!/^image\//.test(file.type || '')) throw new Error('"' + file.name + '" không phải tệp ảnh.');
+  if (file.size > 40 * 1024 * 1024) throw new Error('Ảnh "' + file.name + '" quá lớn (trên 40 MB). Hãy chụp ở độ phân giải thấp hơn.');
+  const img = await loadImage(file);
+  const w0 = img.naturalWidth, h0 = img.naturalHeight;
+  if (!w0 || !h0) throw new Error('Không đọc được tệp ảnh "' + file.name + '".');
+  let out = '';
+  for (const [side, quality] of [[1280, 0.72], [1024, 0.62], [800, 0.5], [640, 0.4]]) {
+    const k = Math.min(1, side / Math.max(w0, h0));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(w0 * k));
+    canvas.height = Math.max(1, Math.round(h0 * k));
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    out = canvas.toDataURL('image/jpeg', quality);
+    if (out.length <= PHOTO_TARGET) break;
+  }
+  if (out.indexOf('data:image/jpeg;base64,') !== 0) throw new Error('Trình duyệt không nén được ảnh "' + file.name + '".');
+  if (out.length > PHOTO_LIMIT) throw new Error('Ảnh "' + file.name + '" vẫn quá lớn sau khi nén (' + Math.round(out.length * 0.75 / 1024) + ' KB, tối đa khoảng 500 KB). Hãy chụp lại gần hơn hoặc cắt bớt ảnh.');
+  return out;
+}
+
+function photoTarget(target) {
+  return target === 'recheck'
+    ? { st: RC, box: $('#rcPhotos'), err: $('#rcPhotoError'), changed: saveRecheckDraft }
+    : { st: R, box: $('#recPhotos'), err: $('#recPhotoError'), changed: saveDraft };
+}
+
+function renderPhotos(target) {
+  const t = photoTarget(target);
+  if (!t.box) return;
+  t.box.innerHTML = t.st.photos.map((p, k) => `<div class="photo">
+      <img src="${p}" alt="Ảnh ${k + 1} sẽ gửi">
+      <button type="button" data-act="remove-photo" data-target="${target}" data-k="${k}">Bỏ</button>
+      <small>${Math.round(p.length * 0.75 / 1024)} KB sau nén</small>
+    </div>`).join('');
+}
+
+async function addPhotos(target, files) {
+  const t = photoTarget(target);
+  showError(t.err, '');
+  const list = Array.from(files || []);
+  const errors = [];
+  for (const f of list) {
+    if (t.st.photos.length >= MAX_PHOTOS) { errors.push('Mỗi lượt chỉ gửi tối đa ' + MAX_PHOTOS + ' ảnh. Ảnh "' + f.name + '" không được thêm.'); continue; }
+    try { t.st.photos.push(await compressPhoto(f)); }
+    catch (e) { errors.push(e.message); }
+  }
+  renderPhotos(target);
+  t.changed();
+  if (errors.length) showError(t.err, errors.join(' '));
+}
+
+/* ---------- Tọa độ ---------- */
+
+function locEls(target) {
+  return target === 'edit'
+    ? { lat: $('#eLat'), lng: $('#eLng'), link: $('#editLink'), linkBox: $('#editLinkBox'), info: $('#editLocInfo') }
+    : { lat: $('#fLat'), lng: $('#fLng'), link: $('#recLink'), linkBox: $('#recLinkBox'), info: $('#recLocInfo') };
+}
+
+function showLocInfo(target, message) {
+  const e = locEls(target);
+  if (!e.info) return;
+  if (message) { e.info.textContent = message; return; }
+  const c = checkLatLngText(e.lat.value, e.lng.value);
+  if (c.empty) { e.info.textContent = 'Bấm "Lấy vị trí GPS", dán liên kết, hoặc gõ tọa độ vào hai ô trên.'; return; }
+  if (c.error) { e.info.textContent = c.error; return; }
+  const st = locState[target];
+  const parts = [];
+  if (st.accuracy !== null) parts.push('GPS sai số khoảng ' + st.accuracy + ' m' + (st.gpsTime ? ', lấy lúc ' + fmtHM(st.gpsTime) : '') + '.');
+  if (st.accuracy !== null && st.accuracy > 50) parts.push('Sai số lớn, nên ra chỗ thoáng và lấy lại.');
+  if (c.warn) parts.push(c.warn);
+  e.info.innerHTML = esc(parts.join(' ')) + ` <a href="https://www.google.com/maps?q=${c.lat},${c.lng}" target="_blank" rel="noopener noreferrer">Kiểm tra trên Google Maps</a>`;
+}
+
+function setCoords(target, lat, lng, accuracy, gpsTime) {
+  const e = locEls(target);
+  e.lat.value = lat.toFixed(6);
+  e.lng.value = lng.toFixed(6);
+  locState[target] = { accuracy: accuracy === undefined ? null : accuracy, gpsTime: gpsTime || '' };
+  showLocInfo(target);
+  if (target === 'record') saveDraft();
+}
+
+function getGps(target) {
+  if (!navigator.geolocation) { showLocInfo(target, 'Trình duyệt này không hỗ trợ GPS. Hãy dán liên kết Google Maps hoặc gõ tọa độ.'); return; }
+  showLocInfo(target, 'Đang lấy vị trí… Hãy đứng ở chỗ thoáng và cho phép trang dùng vị trí.');
+  navigator.geolocation.getCurrentPosition(pos => {
+    const c = pos.coords;
+    let when = '';
+    try { when = new Date(pos.timestamp || Date.now()).toISOString(); } catch (e) { when = new Date().toISOString(); }
+    setCoords(target, c.latitude, c.longitude, Math.round(c.accuracy * 10) / 10, when);
+  }, err => {
+    const msg = err.code === 1 ? 'Trang chưa được phép dùng vị trí. Hãy bật quyền vị trí cho trình duyệt, hoặc dán liên kết Google Maps.'
+      : err.code === 3 ? 'Chưa bắt được GPS sau 20 giây. Hãy ra chỗ thoáng rồi bấm lại, hoặc dán liên kết Google Maps.'
+        : 'Không lấy được vị trí. Hãy thử lại, dán liên kết Google Maps hoặc gõ tọa độ.';
+    showLocInfo(target, msg);
+  }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+}
+
+async function readLink(target) {
+  const e = locEls(target);
+  const text = e.link.value.trim();
+  if (!text) { showLocInfo(target, 'Hãy dán liên kết Google Maps vào ô phía trên.'); return; }
+  let c = parseCoords(text) || parseCoords(firstUrl(text));
+  const url = firstUrl(text);
+  if (!c && isShortMapLink(url)) {
+    showLocInfo(target, 'Đang mở liên kết rút gọn…');
+    try {
+      const r = await call('resolveMap', { url });
+      c = parseCoords(r.url);
+    } catch (err) {
+      showLocInfo(target, err.message);
+      return;
+    }
+  }
+  if (!c) {
+    showLocInfo(target, 'Không đọc được tọa độ từ liên kết này. Trong Google Maps, chạm giữ vào đúng điểm để thả ghim rồi chia sẻ lại, hoặc gõ tọa độ vào hai ô bên dưới.');
+    return;
+  }
+  setCoords(target, c.lat, c.lng);
+  e.link.value = '';
+  e.linkBox.hidden = true;
+}
+
+/* ---------- Ghi nhận ---------- */
+
+function renderRecordOptions() {
+  const sel = $('#fSite');
+  const cur = sel.dataset.want || sel.value;
+  setOptions(sel, optionsHtml(sitesSorted().map(s => ({ value: s.id, label: s.name + (s.area ? ' (' + s.area + ')' : '') })), cur, 'Chọn vị trí…') +
+    '<option value="__new">＋ Thêm vị trí mới…</option>');
+  if (cur && S.sites.has(cur)) { sel.value = cur; delete sel.dataset.want; }
+  const g = $('#fGroup');
+  const curG = g.value;
+  setOptions(g, optionsHtml(allGroups().map(s => ({ value: s, label: s })), curG, 'Chọn nhóm…'));
+  const rounds = new Set();
+  S.checks.forEach(c => { if (c.round) rounds.add(c.round); });
+  setOptions($('#roundList'), Array.from(rounds).slice(-30).map(r => `<option value="${esc(r)}">`).join(''));
+}
+
+function radioValue(form, name) {
+  const el = form.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : '';
+}
+function setRadio(form, name, value) {
+  $$(`input[name="${name}"]`, form).forEach(r => { r.checked = r.value === value; });
+}
+
+function collectRecord() {
+  const f = $('#recordForm');
+  const site = f.elements.siteId.value;
+  return {
+    issueId: R.issueId, checkId: R.checkId,
+    siteId: site === '__new' ? '' : (site || f.elements.siteId.dataset.want || ''),
+    group: f.elements.group.value, item: f.elements.itemName.value,
+    priority: radioValue(f, 'priority'), address: f.elements.address.value,
+    lat: f.elements.lat.value, lng: f.elements.lng.value,
+    accuracy: locState.record.accuracy, gpsTime: locState.record.gpsTime,
+    status: radioValue(f, 'status'), round: f.elements.round.value, description: f.elements.description.value,
+    photos: R.photos.slice(), savedAt: Date.now()
+  };
+}
+
+function draftHasContent(d) {
+  return !!(d.item.trim() || d.address.trim() || d.description.trim() || d.lat.trim() || d.lng.trim() || d.photos.length);
+}
+
+let draftTimer = null;
+function saveDraft() {
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(() => {
+    const d = collectRecord();
+    if (!draftHasContent(d)) { store.set('ht:draft', Object.assign({}, d, { photos: [], empty: true })); return; }
+    if (!store.set('ht:draft', d)) {
+      store.set('ht:draft', Object.assign({}, d, { photos: [] }));
+      showError($('#recPhotoError'), 'Bộ nhớ trình duyệt đầy nên bản nháp không giữ được ảnh. Nếu tải lại trang, hãy chọn ảnh lại.');
+    }
+  }, 400);
+}
+
+function fillRecord(d) {
+  const f = $('#recordForm');
+  R.issueId = d.issueId || uid('I');
+  R.checkId = d.checkId || uid('C');
+  R.photos = (d.photos || []).filter(p => typeof p === 'string' && p.indexOf('data:image/jpeg;base64,') === 0).slice(0, MAX_PHOTOS);
+  f.elements.siteId.dataset.want = d.siteId || '';
+  renderRecordOptions();
+  f.elements.group.value = d.group || '';
+  f.elements.itemName.value = d.item || '';
+  setRadio(f, 'priority', d.priority || 'Trung bình');
+  f.elements.address.value = d.address || '';
+  f.elements.lat.value = d.lat || '';
+  f.elements.lng.value = d.lng || '';
+  locState.record = { accuracy: typeof d.accuracy === 'number' ? d.accuracy : null, gpsTime: d.gpsTime || '' };
+  setRadio(f, 'status', d.status || STATUSES[0]);
+  f.elements.round.value = d.round || '';
+  f.elements.description.value = d.description || '';
+  renderPhotos('record');
+  showLocInfo('record');
+}
+
+function resetRecord(keep) {
+  keep = keep || {};
+  fillRecord({ siteId: keep.siteId, group: keep.group, round: keep.round });
+  store.del('ht:draft');
+  $('#draftNote').hidden = true;
+  showError($('#recError'), '');
+  showError($('#recPhotoError'), '');
+}
+
+async function submitRecord() {
+  const errEl = $('#recError');
+  showError(errEl, '');
+  if (!requireName()) return;
+  const d = collectRecord();
+  const f = $('#recordForm');
+  const fail = (msg, el) => { showError(errEl, msg); if (el) el.focus(); };
+  if (!d.siteId) return fail('Hãy chọn vị trí, hoặc thêm vị trí mới.', f.elements.siteId);
+  if (!d.group) return fail('Hãy chọn nhóm.', f.elements.group);
+  if (!d.item.trim()) return fail('Hãy nhập tên hạng mục.', f.elements.itemName);
+  const loc = checkLatLngText(d.lat, d.lng);
+  if (loc.error) return fail(loc.error, f.elements.lat);
+  if (loc.empty && !d.address.trim()) return fail('Cần có tọa độ hoặc địa chỉ để biết hạng mục nằm ở đâu.', f.elements.address);
+  if (loc.warn && !(await confirmBox(loc.warn + ' Vẫn gửi với tọa độ này?', 'Vẫn gửi', false))) return;
+
+  const btn = $('#recSubmit');
+  btn.disabled = true;
+  btn.textContent = 'Đang gửi, chờ máy chủ xác nhận…';
+  try {
+    const r = await call('createIssue', {
+      issue: {
+        id: d.issueId, siteId: d.siteId, group: d.group, item: d.item, priority: d.priority, address: d.address,
+        lat: loc.empty ? null : loc.lat, lng: loc.empty ? null : loc.lng,
+        accuracy: loc.empty ? null : d.accuracy, gpsTime: loc.empty ? '' : d.gpsTime
+      },
+      check: { id: d.checkId, round: d.round, status: d.status, description: d.description, photos: d.photos }
+    }, { write: true, timeout: 90000 });
+    store.set('ht:lastRound', d.round);
+    resetRecord({ siteId: d.siteId, group: d.group, round: d.round });
+    applyWrite(r);
+    toast('Máy chủ đã xác nhận: đã ghi "' + r.issue.item + '".');
+    window.scrollTo(0, 0);
+  } catch (e) {
+    showError(errEl, 'Chưa ghi được: ' + e.message + ' Nội dung vẫn còn nguyên trong bản nháp, hãy bấm gửi lại.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Gửi ghi nhận';
+  }
+}
+
+/* ---------- Khảo sát lại ---------- */
+
+function saveRecheckDraft() {
+  const f = $('form[data-form="recheck"]');
+  if (!f || !RC.issueId) return;
+  const d = { checkId: RC.checkId, status: radioValue(f, 'rcStatus'), round: f.elements.rcRound.value, description: f.elements.rcDesc.value, photos: RC.photos.slice(), savedAt: Date.now() };
+  if (!store.set('ht:recheck:' + RC.issueId, d)) store.set('ht:recheck:' + RC.issueId, Object.assign({}, d, { photos: [] }));
+}
+
+function openRecheck(id) {
+  const i = S.issues.get(id);
+  if (!i || i.deletedAt) return;
+  const d = store.get('ht:recheck:' + id) || {};
+  RC.issueId = id;
+  RC.checkId = d.checkId || uid('C');
+  RC.photos = (d.photos || []).filter(p => typeof p === 'string' && p.indexOf('data:image/jpeg;base64,') === 0).slice(0, MAX_PHOTOS);
+  const round = d.round !== undefined ? d.round : (store.get('ht:lastRound') || '');
+  openSheet('Khảo sát lại', `
+    <form data-form="recheck" novalidate autocomplete="off">
+      <p><b>${esc(i.item)}</b><br><span class="hint">${esc([siteName(i.siteId), i.address].filter(Boolean).join(', '))}. Hiện là: ${esc(i.status)}.</span></p>
+      ${d.savedAt ? `<div class="draft-note">Đã khôi phục bản nháp lưu lúc ${esc(fmtDT(d.savedAt))}.</div>` : ''}
+      <fieldset class="field seg"><legend>Trạng thái lần này</legend>${segHtml('rcStatus', STATUSES, d.status || i.status, true)}</fieldset>
+      <div class="field"><label for="rcRound">Đợt khảo sát</label><input id="rcRound" name="rcRound" type="text" maxlength="60" list="roundList" value="${esc(round)}"></div>
+      <div class="field"><label for="rcDesc">Mô tả hiện trạng</label><textarea id="rcDesc" name="rcDesc" rows="3" maxlength="2000">${esc(d.description || '')}</textarea></div>
+      <div class="field">
+        <span class="label">Ảnh (tối đa 2, tự nén trước khi gửi)</span>
+        <div class="photos" id="rcPhotos"></div>
+        <label class="btn ghost file-btn">Thêm ảnh<input type="file" id="rcPhotoInput" accept="image/*" multiple hidden></label>
+        <p class="error" id="rcPhotoError" role="alert" hidden></p>
+      </div>
+      <p class="hint">Lượt này được ghi thành một dòng mới. Các lượt trước giữ nguyên.</p>
+      <p class="error" id="rcError" role="alert" hidden></p>
+      <div class="form-actions"><button type="submit" class="btn primary big" id="rcSubmit">Gửi lượt khảo sát</button></div>
+    </form>`, { type: 'form' });
+  renderPhotos('recheck');
+}
+
+async function submitRecheck(form) {
+  if (!requireName()) return;
+  const errEl = $('#rcError');
+  showError(errEl, '');
+  const issueId = RC.issueId;
+  const btn = $('#rcSubmit');
+  btn.disabled = true;
+  btn.textContent = 'Đang gửi, chờ máy chủ xác nhận…';
+  try {
+    const round = form.elements.rcRound.value;
+    const r = await call('addCheck', {
+      check: { id: RC.checkId, issueId, round, status: radioValue(form, 'rcStatus'), description: form.elements.rcDesc.value, photos: RC.photos.slice() }
+    }, { write: true, timeout: 90000 });
+    store.del('ht:recheck:' + issueId);
+    store.set('ht:lastRound', round);
+    RC.issueId = ''; RC.photos = [];
+    S.sheet = null;
+    applyWrite(r);
+    renderIssueSheet(issueId);
+    toast('Máy chủ đã xác nhận: đã ghi lượt khảo sát.');
+  } catch (e) {
+    showError(errEl, 'Chưa ghi được: ' + e.message + ' Nội dung vẫn còn, hãy bấm gửi lại.');
+    btn.disabled = false;
+    btn.textContent = 'Gửi lượt khảo sát';
+  }
+}
+
+/* ---------- Sửa, xóa, khôi phục hạng mục ---------- */
+
+function openEditIssue(id) {
+  const i = S.issues.get(id);
+  if (!i) return;
+  locState.edit = { accuracy: i.accuracy === undefined ? null : i.accuracy, gpsTime: i.gpsTime || '' };
+  openSheet('Sửa hạng mục', `
+    <form data-form="edit-issue" data-id="${esc(id)}" novalidate autocomplete="off">
+      <div class="field"><label for="eSite">Vị trí</label><select id="eSite" name="siteId">${optionsHtml(sitesSorted().map(s => ({ value: s.id, label: s.name })), i.siteId)}</select></div>
+      <div class="field"><label for="eGroup">Nhóm</label><select id="eGroup" name="group">${optionsHtml(allGroups().map(s => ({ value: s, label: s })), i.group)}</select></div>
+      <div class="field"><label for="eItem">Hạng mục</label><input id="eItem" name="itemName" type="text" maxlength="120" value="${esc(i.item)}"></div>
+      <fieldset class="field seg"><legend>Ưu tiên</legend>${segHtml('ePriority', PRIORITIES, i.priority)}</fieldset>
+      <div class="field"><label for="eAddress">Địa chỉ</label><input id="eAddress" name="address" type="text" maxlength="200" value="${esc(i.address)}"></div>
+      <fieldset class="field loc">
+        <legend>Tọa độ</legend>
+        <div class="loc-actions">
+          <button type="button" class="btn" data-act="gps" data-target="edit">Lấy vị trí GPS</button>
+          <button type="button" class="btn ghost" data-act="toggle-link" data-target="edit">Dán liên kết Google Maps</button>
+        </div>
+        <div class="loc-link" id="editLinkBox" hidden>
+          <label for="editLink">Liên kết hoặc tọa độ sao chép từ Google Maps</label>
+          <div class="inline"><input id="editLink" type="text" inputmode="url"><button type="button" class="btn" data-act="read-link" data-target="edit">Đọc tọa độ</button></div>
+        </div>
+        <div class="latlng">
+          <div><label for="eLat">Vĩ độ</label><input id="eLat" name="lat" type="text" inputmode="decimal" value="${hasCoords(i) ? i.lat : ''}"></div>
+          <div><label for="eLng">Kinh độ</label><input id="eLng" name="lng" type="text" inputmode="decimal" value="${hasCoords(i) ? i.lng : ''}"></div>
+        </div>
+        <p class="hint" id="editLocInfo"></p>
+      </fieldset>
+      <p class="hint">Trạng thái chỉ đổi qua "Khảo sát lại". Mọi thay đổi ở đây được ghi vào nhật ký kèm giá trị trước và sau.</p>
+      <p class="error" id="eError" role="alert" hidden></p>
+      <div class="form-actions"><button type="submit" class="btn primary big" id="eSubmit">Lưu thay đổi</button></div>
+    </form>`, { type: 'form' });
+  showLocInfo('edit');
+}
+
+async function submitEditIssue(form) {
+  if (!requireName()) return;
+  const id = form.dataset.id;
+  const i = S.issues.get(id);
+  const errEl = $('#eError');
+  showError(errEl, '');
+  if (!i) return;
+  const patch = {};
+  const item = form.elements.itemName.value.trim(), address = form.elements.address.value.trim();
+  if (!item) return showError(errEl, 'Hãy nhập tên hạng mục.');
+  if (form.elements.siteId.value !== i.siteId) patch.siteId = form.elements.siteId.value;
+  if (form.elements.group.value !== i.group) patch.group = form.elements.group.value;
+  if (item !== i.item) patch.item = item;
+  const pr = radioValue(form, 'ePriority');
+  if (pr && pr !== i.priority) patch.priority = pr;
+  if (address !== i.address) patch.address = address;
+  const loc = checkLatLngText(form.elements.lat.value, form.elements.lng.value);
+  if (loc.error) return showError(errEl, loc.error);
+  if (loc.empty && !address) return showError(errEl, 'Cần có tọa độ hoặc địa chỉ.');
+  const had = hasCoords(i);
+  if (loc.empty ? had : (!had || Math.abs(loc.lat - i.lat) > 1e-7 || Math.abs(loc.lng - i.lng) > 1e-7)) {
+    if (loc.warn && !(await confirmBox(loc.warn + ' Vẫn lưu tọa độ này?', 'Vẫn lưu', false))) return;
+    patch.lat = loc.empty ? null : loc.lat;
+    patch.lng = loc.empty ? null : loc.lng;
+    patch.accuracy = loc.empty ? null : locState.edit.accuracy;
+    patch.gpsTime = loc.empty ? '' : locState.edit.gpsTime;
+  }
+  if (!Object.keys(patch).length) { renderIssueSheet(id); return; }
+  const btn = $('#eSubmit');
+  btn.disabled = true;
+  btn.textContent = 'Đang lưu…';
+  try {
+    const r = await call('updateIssue', { id, patch }, { write: true });
+    S.sheet = null;
+    applyWrite(r);
+    renderIssueSheet(id);
+    toast('Máy chủ đã xác nhận: đã lưu thay đổi.');
+  } catch (e) {
+    showError(errEl, 'Chưa lưu được: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = 'Lưu thay đổi';
+  }
+}
+
+async function deleteIssue(id) {
+  const i = S.issues.get(id);
+  if (!i || !requireName()) return;
+  const ok = await confirmBox('Xóa hạng mục "' + i.item + '"? Hạng mục sẽ ẩn khỏi danh sách, bản đồ và tệp xuất. Dữ liệu vẫn nằm trong bảng tính và khôi phục được; việc xóa được ghi vào nhật ký.', 'Xóa hạng mục');
+  if (!ok) return;
+  try {
+    const r = await call('deleteIssue', { id }, { write: true });
+    applyWrite(r);
+    toast('Máy chủ đã xác nhận: đã xóa "' + i.item + '".');
+  } catch (e) { toast('Chưa xóa được: ' + e.message, true); }
+}
+
+async function restoreIssue(id) {
+  if (!requireName()) return;
+  try {
+    const r = await call('restoreIssue', { id }, { write: true });
+    applyWrite(r);
+    toast('Máy chủ đã xác nhận: đã khôi phục hạng mục.');
+  } catch (e) { toast('Chưa khôi phục được: ' + e.message, true); }
+}
+
+/* ---------- Vị trí ---------- */
+
+function renderSites() {
+  const live = liveIssues();
+  const rows = sitesSorted().map(s => {
+    const mine = live.filter(i => i.siteId === s.id);
+    const open = mine.filter(i => i.status !== 'Đã khắc phục').length;
+    return `<li><button type="button" class="row" data-act="open-site" data-id="${esc(s.id)}">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="#0A5C70" stroke-width="2" aria-hidden="true"><path d="M12 21s7-6.1 7-11.500A7 7 0 0 0 5 9.500C5 14.900 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>
+      <span><b>${esc(s.name)}</b>
+        ${s.area ? `<span class="meta">${esc(s.area)}</span>` : ''}
+        <span class="meta">${mine.length} hạng mục${mine.length ? ', ' + open + ' chưa khắc phục xong' : ''}</span></span>
+    </button></li>`;
+  });
+  $('#siteRows').innerHTML = rows.join('');
+  if (!rows.length && S.loaded) $('#siteRows').innerHTML = '<li><div class="row"><span></span><span class="meta">Chưa có vị trí nào. Bấm "Thêm vị trí" để tạo, ví dụ: Công viên bờ biển đoạn Quảng trường 2/4.</span></div></li>';
+}
+
+function renderSiteSheet(id, keepScroll) {
+  const s = S.sites.get(id);
+  if (!s) { closeSheet(); return; }
+  const top = keepScroll ? $('#sheetBody').scrollTop : 0;
+  const issues = liveIssues().filter(i => i.siteId === id);
+  const byAddr = new Map();
+  issues.forEach(i => {
+    const key = norm(i.address) || '';
+    if (!byAddr.has(key)) byAddr.set(key, { label: i.address || 'Chưa có địa chỉ', checks: [] });
+    checksOf(i.id).forEach(c => byAddr.get(key).checks.push(c));
+  });
+  const blocks = Array.from(byAddr.values()).sort((a, b) => a.label.localeCompare(b.label, 'vi', { numeric: true })).map(b => {
+    b.checks.sort(newestFirst);
+    return `<div class="addr-block"><h4>${esc(b.label)}</h4><ol class="timeline">${b.checks.map(c => checkItemHtml(c, true)).join('')}</ol></div>`;
+  });
+  const html = `
+    <dl class="facts">
+      <dt>Khu vực</dt><dd>${esc(s.area) || '(chưa có)'}</dd>
+      <dt>Ghi chú</dt><dd style="white-space:pre-wrap">${esc(s.note) || '(chưa có)'}</dd>
+      <dt>Tạo lúc</dt><dd>${esc(fmtDT(s.createdAt))}</dd>
+    </dl>
+    <div class="form-actions" style="margin-bottom:22px">
+      <button type="button" class="btn primary" data-act="record-here" data-id="${esc(id)}">Ghi nhận tại đây</button>
+      <button type="button" class="btn" data-act="edit-site" data-id="${esc(id)}">Sửa vị trí</button>
+      <button type="button" class="btn ghost" data-act="open-audit" data-id="${esc(id)}">Nhật ký</button>
+    </div>
+    <h3 style="margin-top:0">Lịch sử theo địa chỉ</h3>
+    ${blocks.length ? blocks.join('') : '<p class="hint">Chưa có hạng mục nào tại vị trí này.</p>'}`;
+  if (keepScroll && S.sheet && S.sheet.type === 'site' && S.sheet.id === id) {
+    $('#sheetBody').innerHTML = html;
+    $('#sheetTitle').textContent = s.name;
+    $('#sheetBody').scrollTop = top;
+  } else {
+    openSheet(s.name, html, { type: 'site', id });
+  }
+}
+
+function openSiteForm(id, fromRecord) {
+  const s = id ? S.sites.get(id) : null;
+  openSheet(s ? 'Sửa vị trí' : 'Thêm vị trí', `
+    <form data-form="site" data-id="${esc(id || '')}" data-new-id="${uid('S')}" data-from-record="${fromRecord ? '1' : ''}" novalidate autocomplete="off">
+      <div class="field"><label for="sName">Tên vị trí</label><input id="sName" name="name" type="text" maxlength="80" value="${esc(s ? s.name : '')}" placeholder="Ví dụ: Công viên bờ biển, đoạn Quảng trường 2/4" autofocus></div>
+      <div class="field"><label for="sArea">Khu vực</label><input id="sArea" name="area" type="text" maxlength="80" value="${esc(s ? s.area : '')}" placeholder="Tuyến đường, tổ dân phố"></div>
+      <div class="field"><label for="sNote">Ghi chú</label><textarea id="sNote" name="note" rows="2" maxlength="500">${esc(s ? s.note : '')}</textarea></div>
+      <p class="error" id="sError" role="alert" hidden></p>
+      <div class="form-actions"><button type="submit" class="btn primary big" id="sSubmit">${s ? 'Lưu thay đổi' : 'Thêm vị trí'}</button></div>
+    </form>`, { type: 'form' });
+}
+
+async function submitSite(form) {
+  if (!requireName()) return;
+  const errEl = $('#sError');
+  showError(errEl, '');
+  const name = form.elements.name.value.trim(), area = form.elements.area.value.trim(), note = form.elements.note.value.trim();
+  if (!name) return showError(errEl, 'Hãy nhập tên vị trí.');
+  const id = form.dataset.id;
+  const btn = $('#sSubmit');
+  btn.disabled = true;
+  try {
+    let r;
+    if (id) r = await call('updateSite', { id, patch: { name, area, note } }, { write: true });
+    else r = await call('createSite', { site: { id: form.dataset.newId, name, area, note } }, { write: true });
+    const fromRecord = form.dataset.fromRecord === '1';
+    S.sheet = null;
+    closeSheet();
+    if (fromRecord) $('#fSite').dataset.want = r.site.id;
+    applyWrite(r);
+    if (fromRecord) { renderRecordOptions(); saveDraft(); } else renderSiteSheet(r.site.id);
+    toast('Máy chủ đã xác nhận: đã lưu vị trí "' + r.site.name + '".');
+  } catch (e) {
+    showError(errEl, 'Chưa lưu được: ' + e.message);
+    btn.disabled = false;
+  }
+}
+
+/* ---------- Bản đồ ---------- */
+
+function ensureLeaflet() {
+  if (window.L && window.L.map) return Promise.resolve(true);
+  if (mapState.loading) return mapState.loading;
+  mapState.loading = new Promise(resolve => {
+    let done = false;
+    const finish = ok => { if (!done) { done = true; resolve(ok); } };
+    const css = document.createElement('link');
+    css.rel = 'stylesheet'; css.href = LEAFLET + 'leaflet.css'; css.integrity = LEAFLET_CSS_SRI; css.crossOrigin = '';
+    document.head.appendChild(css);
+    const js = document.createElement('script');
+    js.src = LEAFLET + 'leaflet.js'; js.integrity = LEAFLET_JS_SRI; js.crossOrigin = '';
+    js.onload = () => finish(!!(window.L && window.L.map));
+    js.onerror = () => finish(false);
+    document.head.appendChild(js);
+    setTimeout(() => finish(!!(window.L && window.L.map)), 12000);
+  });
+  return mapState.loading;
+}
+
+function renderMap() {
+  const live = liveIssues();
+  const withCoords = live.filter(hasCoords);
+  $('#mapLegend').innerHTML = STATUSES.map((s, k) => {
+    const n = withCoords.filter(i => i.status === s).length;
+    return `<button type="button" data-act="toggle-status" data-v="${esc(s)}" aria-pressed="${mapState.hidden.has(s) ? 'false' : 'true'}">${mark(s)}${esc(s)} (${n})</button>`;
+  }).join('');
+  const points = withCoords.filter(i => !mapState.hidden.has(i.status));
+  const missing = live.length - withCoords.length;
+  const notes = [];
+  if (missing) notes.push(missing + ' hạng mục chưa có tọa độ nên không hiện trên bản đồ.');
+  $('#myMapsBox').innerHTML = validMyMaps(S.config.myMapsUrl)
+    ? `<a class="btn" href="${esc(S.config.myMapsUrl)}" target="_blank" rel="noopener noreferrer">Mở bản đồ My Maps của tổ</a>` : '';
+
+  if (mapState.mode === null) {
+    $('#mapNote').textContent = 'Đang tải bản đồ nền…';
+    ensureLeaflet().then(ok => { mapState.mode = ok ? 'leaflet' : 'plain'; if (S.view === 'map') renderMap(); });
+    return;
+  }
+  if (mapState.mode === 'leaflet') {
+    if (!mapState.map) {
+      mapState.map = L.map('mapBox').setView([12.2388, 109.1967], 14);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(mapState.map);
+      mapState.layer = L.layerGroup().addTo(mapState.map);
+    }
+    mapState.map.invalidateSize();
+    mapState.layer.clearLayers();
+    points.forEach(i => {
+      const icon = L.divIcon({ className: 'pin', html: mark(i.status), iconSize: [26, 26], iconAnchor: [13, 13] });
+      L.marker([i.lat, i.lng], { icon, title: i.item + ' (' + i.status + ')', alt: i.item }).on('click', () => renderIssueSheet(i.id)).addTo(mapState.layer);
+    });
+    if (!mapState.fitted && points.length) {
+      mapState.map.fitBounds(L.latLngBounds(points.map(i => [i.lat, i.lng])).pad(0.2), { maxZoom: 17 });
+      mapState.fitted = true;
+    }
+    notes.push('Chạm vào một điểm để xem chi tiết.');
+  } else {
+    renderPlainMap(points);
+    notes.push('Không tải được bản đồ nền (cần mạng). Đang hiện sơ đồ điểm theo tọa độ; chạm vào một điểm để xem chi tiết.');
+  }
+  $('#mapNote').textContent = notes.join(' ');
+  if (mapState.mode === 'plain') $('#mapNote').insertAdjacentHTML('beforeend', ' <button type="button" class="linklike" data-act="retry-map">Thử tải lại bản đồ nền</button>');
+}
+
+function renderPlainMap(points) {
+  const box = $('#mapBox');
+  if (!points.length) { box.innerHTML = '<p class="hint" style="padding:16px">Chưa có điểm nào để hiện.</p>'; return; }
+  const W = 600, H = 480, pad = 40;
+  const lats = points.map(p => p.lat), lngs = points.map(p => p.lng);
+  const midLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+  const kx = Math.cos(midLat * Math.PI / 180);
+  const x0 = Math.min(...lngs) * kx, x1 = Math.max(...lngs) * kx, y0 = Math.min(...lats), y1 = Math.max(...lats);
+  const scale = Math.min((W - 2 * pad) / Math.max(x1 - x0, 1e-5), (H - 2 * pad) / Math.max(y1 - y0, 1e-5));
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  box.innerHTML = `<svg class="plain" viewBox="0 0 ${W} ${H}" role="img" aria-label="Sơ đồ các điểm theo tọa độ">` + points.map(i => {
+    const x = W / 2 + (i.lng * kx - cx) * scale, y = H / 2 - (i.lat - cy) * scale;
+    const k = statusIndex(i.status);
+    return `<g class="st-${k}" data-act="open-issue" data-id="${esc(i.id)}" transform="translate(${(x - 12).toFixed(1)},${(y - 12).toFixed(1)})" fill="currentColor" stroke="#fff" stroke-width="1.5" style="cursor:pointer"><title>${esc(i.item)}</title><rect x="-8" y="-8" width="40" height="40" fill="transparent" stroke="none"/>${SHAPES[k]}</g>`;
+  }).join('') + '</svg>';
+}
+
+/* ---------- Xuất ---------- */
+
+function renderExport() {
+  const input = $('#cfgMyMaps');
+  if (document.activeElement !== input) input.value = S.config.myMapsUrl || '';
+}
+
+function download(name, mime, text) {
+  const url = URL.createObjectURL(new Blob([text], { type: mime }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+}
+
+function exportSet() {
+  const all = $('#exDeleted').checked;
+  return Array.from(S.issues.values()).filter(i => all || !i.deletedAt).sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt)));
+}
+function stamp() {
+  const p = dtParts(new Date());
+  return `${p.year}${p.month}${p.day}-${p.hour}${p.minute}`;
+}
+
+function issuesCsv() {
+  const head = ['id', 'vị trí', 'khu vực', 'nhóm', 'hạng mục', 'ưu tiên', 'địa chỉ', 'lat', 'lng', 'độ chính xác (m)', 'thời điểm GPS',
+    'người ghi nhận', 'thời điểm ghi nhận', 'trạng thái mới nhất', 'số lượt khảo sát', 'lượt mới nhất lúc', 'mô tả mới nhất', 'đã xóa lúc', 'người xóa'];
+  const rows = exportSet().map(i => {
+    const s = S.sites.get(i.siteId) || {};
+    const cs = checksOf(i.id);
+    return [i.id, s.name || '', s.area || '', i.group, i.item, i.priority, i.address,
+      hasCoords(i) ? i.lat : '', hasCoords(i) ? i.lng : '', typeof i.accuracy === 'number' ? i.accuracy : '', i.gpsTime,
+      i.recorder, i.createdAt, i.status, cs.length, cs[0] ? cs[0].createdAt : '', cs[0] ? cs[0].description : '', i.deletedAt, i.deletedBy];
+  });
+  return toCsv(head, rows);
+}
+
+function checksCsv() {
+  const head = ['id lượt', 'id hạng mục', 'hạng mục', 'vị trí', 'địa chỉ', 'đợt khảo sát', 'trạng thái', 'mô tả', 'ảnh 1', 'ảnh 2', 'người ghi nhận', 'thời điểm'];
+  const rows = [];
+  exportSet().forEach(i => {
+    checksOf(i.id).slice().reverse().forEach(c => {
+      rows.push([c.id, i.id, i.item, siteName(i.siteId), i.address, c.round, c.status, c.description,
+        photoLabel((c.photos || [])[0]), photoLabel((c.photos || [])[1]), c.recorder, c.createdAt]);
+    });
+  });
+  return toCsv(head, rows);
+}
+
+function kmlText() {
+  const colors = ['ff1b2fc2', 'ff005fa3', 'ff3e7a1c', 'ffb4523d']; // aabbggrr
+  const styles = STATUSES.map((s, k) => `<Style id="st${k}"><IconStyle><color>${colors[k]}</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/wht-pushpin.png</href></Icon></IconStyle></Style>`).join('');
+  const marks = exportSet().filter(hasCoords).map(i => {
+    const last = checksOf(i.id)[0];
+    const lines = ['Trạng thái: ' + i.status, 'Ưu tiên: ' + i.priority, 'Nhóm: ' + i.group, 'Vị trí: ' + siteName(i.siteId), 'Địa chỉ: ' + (i.address || ''),
+      last ? 'Lượt mới nhất: ' + fmtDT(last.createdAt) + ', ' + last.recorder : '', last && last.description ? 'Mô tả: ' + last.description : '',
+      i.deletedAt ? 'ĐÃ XÓA lúc ' + fmtDT(i.deletedAt) : ''].filter(Boolean);
+    const data = [['trạng thái', i.status], ['ưu tiên', i.priority], ['nhóm', i.group], ['vị trí', siteName(i.siteId)], ['địa chỉ', i.address], ['id', i.id]];
+    return `<Placemark><name>${xml(i.item)}</name><description>${xml(lines.join('\n'))}</description><styleUrl>#st${statusIndex(i.status)}</styleUrl>` +
+      `<ExtendedData>${data.map(d => `<Data name="${xml(d[0])}"><value>${xml(d[1])}</value></Data>`).join('')}</ExtendedData>` +
+      `<Point><coordinates>${i.lng},${i.lat},0</coordinates></Point></Placemark>`;
+  });
+  return `<${'?'}xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>Hiện trạng hạ tầng công viên tuyến biển phường Nha Trang ${stamp()}</name>${styles}${marks.join('\n')}</Document></kml>\n`;
+}
+
+function doExport(kind) {
+  if (!S.issues.size) { toast('Chưa có dữ liệu để xuất.', true); return; }
+  if (kind === 'issues') download('hang-muc-' + stamp() + '.csv', 'text/csv;charset=utf-8', issuesCsv());
+  else if (kind === 'checks') download('luot-khao-sat-' + stamp() + '.csv', 'text/csv;charset=utf-8', checksCsv());
+  else download('ha-tang-' + stamp() + '.kml', 'application/vnd.google-earth.kml+xml', kmlText());
+  toast('Đã tạo tệp. Nếu không thấy tải về, hãy mở trang bằng trình duyệt Chrome hoặc Safari.');
+}
+
+async function submitConfig() {
+  const errEl = $('#cfgError');
+  showError(errEl, '');
+  const url = $('#cfgMyMaps').value.trim();
+  if (url && !validMyMaps(url)) return showError(errEl, 'Liên kết phải bắt đầu bằng https://www.google.com/maps/d/ (liên kết chia sẻ của Google My Maps).');
+  if (!requireName()) return;
+  try {
+    const r = await call('setConfig', { myMapsUrl: url }, { write: true });
+    applyWrite(r);
+    toast(url ? 'Máy chủ đã xác nhận: đã lưu liên kết My Maps.' : 'Máy chủ đã xác nhận: đã gỡ liên kết My Maps.');
+  } catch (e) { showError(errEl, 'Chưa lưu được: ' + e.message); }
+}
+
+/* ---------- Nhật ký ---------- */
+
+const KEY_LABELS = {
+  status: 'Trạng thái', item: 'Hạng mục', group: 'Nhóm', priority: 'Ưu tiên', address: 'Địa chỉ', lat: 'Vĩ độ', lng: 'Kinh độ',
+  siteId: 'Vị trí', name: 'Tên', area: 'Khu vực', note: 'Ghi chú', deletedAt: 'Xóa lúc', deletedBy: 'Người xóa',
+  myMapsUrl: 'Liên kết My Maps', accuracy: 'Sai số GPS', gpsTime: 'Thời điểm GPS', round: 'Đợt khảo sát'
+};
+function auditValue(key, v) {
+  if (v === null || v === undefined || v === '') return '(trống)';
+  if (key === 'siteId') return siteName(v);
+  if (key === 'deletedAt' || key === 'gpsTime') return fmtDT(v);
+  return String(v);
+}
+function auditDiff(e) {
+  let before = null, after = null;
+  try { before = e.before ? JSON.parse(e.before) : null; } catch (x) { /* bị cắt bớt */ }
+  try { after = e.after ? JSON.parse(e.after) : null; } catch (x) { /* bị cắt bớt */ }
+  if (!after || typeof after !== 'object') return '';
+  if (after.issue) return esc('Hạng mục "' + after.issue.item + '", trạng thái ' + after.issue.status);
+  if (!before) return esc(after.name ? 'Tên: ' + after.name : '');
+  return Object.keys(after).filter(k => KEY_LABELS[k]).map(k =>
+    `${esc(KEY_LABELS[k])}: <del>${esc(auditValue(k, before[k]))}</del> thành <ins>${esc(auditValue(k, after[k]))}</ins>`).join('; ');
+}
+function auditObject(id) {
+  if (S.issues.has(id)) return S.issues.get(id).item;
+  if (S.sites.has(id)) return S.sites.get(id).name;
+  return id === 'myMapsUrl' ? 'Cấu hình' : id;
+}
+
+async function openAudit(objectId) {
+  openSheet('Nhật ký thay đổi', '<p class="hint">Đang tải nhật ký…</p>', { type: 'audit' });
+  try {
+    const q = { limit: 200 };
+    if (objectId) q.objectId = objectId;
+    const r = await call('audit', q);
+    if (!S.sheet || S.sheet.type !== 'audit') return;
+    $('#sheetBody').innerHTML = (objectId ? `<p class="hint">Chỉ hiện thay đổi của: ${esc(auditObject(objectId))}</p>` : `<p class="hint">${r.entries.length} thay đổi gần nhất trên tổng số ${Number(r.total) || 0}. Bản đầy đủ nằm ở sheet AuditLog.</p>`) +
+      (r.entries.length ? '<ul class="audit">' + r.entries.map(e => `<li><b>${esc(e.action)}</b>: ${esc(auditObject(e.objectId))}<br>${esc(fmtDT(e.time))}, ${esc(e.actor)}<span class="diff">${auditDiff(e)}</span></li>`).join('') + '</ul>' : '<p>Chưa có thay đổi nào.</p>');
+  } catch (e) {
+    if (S.sheet && S.sheet.type === 'audit') $('#sheetBody').innerHTML = `<p class="error">Chưa tải được nhật ký: ${esc(e.message)}</p>`;
+  }
+}
+
+/* ============================ SỰ KIỆN ============================ */
+
+const ACTIONS = {
+  'go': el => setView(el.dataset.view),
+  'retry-sync': () => { failCount = 0; syncNow(); },
+  'edit-name': () => openNameSheet(''),
+  'close-sheet': () => closeSheet(),
+  'open-audit': el => openAudit(el.dataset.id || ''),
+  'open-issue': el => renderIssueSheet(el.dataset.id),
+  'recheck': el => openRecheck(el.dataset.id),
+  'edit-issue': el => openEditIssue(el.dataset.id),
+  'delete-issue': el => deleteIssue(el.dataset.id),
+  'restore-issue': el => restoreIssue(el.dataset.id),
+  'load-photo': el => loadPhoto(el),
+  'zoom-photo': el => el.classList.toggle('full'),
+  'remove-photo': el => { const t = photoTarget(el.dataset.target); t.st.photos.splice(Number(el.dataset.k), 1); renderPhotos(el.dataset.target); t.changed(); },
+  'gps': el => getGps(el.dataset.target),
+  'toggle-link': el => { const e = locEls(el.dataset.target); e.linkBox.hidden = !e.linkBox.hidden; if (!e.linkBox.hidden) e.link.focus(); },
+  'read-link': el => readLink(el.dataset.target),
+  'clear-draft': async () => { if (await confirmBox('Xóa bản nháp đang soạn trên máy này?', 'Xóa bản nháp')) resetRecord({}); },
+  'filter-status': el => { setView('list'); $('#qStatus').value = el.dataset.v; $('#qGroup').value = ''; renderList(); },
+  'filter-group': el => { setView('list'); $('#qGroup').value = el.dataset.v; $('#qStatus').value = ''; renderList(); },
+  'toggle-status': el => { const s = el.dataset.v; if (mapState.hidden.has(s)) mapState.hidden.delete(s); else mapState.hidden.add(s); renderMap(); },
+  'retry-map': () => { mapState.mode = null; mapState.loading = null; renderMap(); },
+  'new-site': () => { if (requireName()) openSiteForm('', false); },
+  'open-site': el => renderSiteSheet(el.dataset.id),
+  'edit-site': el => openSiteForm(el.dataset.id, false),
+  'record-here': el => { const id = el.dataset.id; closeSheet(); $('#fSite').dataset.want = id; setView('record'); $('#fSite').value = id; saveDraft(); },
+  'export-issues': () => doExport('issues'),
+  'export-checks': () => doExport('checks'),
+  'export-kml': () => doExport('kml')
+};
+
+function init() {
+  $('#fPriority').insertAdjacentHTML('beforeend', segHtml('priority', PRIORITIES, 'Trung bình'));
+  $('#fStatus').insertAdjacentHTML('beforeend', segHtml('status', STATUSES, STATUSES[0], true));
+  renderName();
+  loadCache();
+
+  const draft = store.get('ht:draft');
+  fillRecord(draft || { round: store.get('ht:lastRound') || '' });
+  if (draft && !draft.empty) {
+    const note = $('#draftNote');
+    note.textContent = 'Đã khôi phục bản nháp lưu lúc ' + fmtDT(draft.savedAt) + '. Bản nháp chỉ nằm trên máy này cho đến khi anh/chị bấm gửi.';
+    note.hidden = false;
+  }
+
+  document.addEventListener('click', ev => {
+    const tab = ev.target.closest('.tabs button');
+    if (tab) { setView(tab.dataset.view); return; }
+    if (ev.target === $('#sheetWrap')) { closeSheet(); return; }
+    const el = ev.target.closest('[data-act]');
+    if (el && ACTIONS[el.dataset.act]) ACTIONS[el.dataset.act](el);
+  });
+  $('#confirmOk').addEventListener('click', () => closeConfirm(true));
+  $('#confirmCancel').addEventListener('click', () => closeConfirm(false));
+  document.addEventListener('keydown', ev => {
+    if (ev.key !== 'Escape') return;
+    if (!$('#confirmWrap').hidden) closeConfirm(false);
+    else if (S.sheet) closeSheet();
+  });
+
+  document.addEventListener('submit', ev => {
+    ev.preventDefault();
+    const f = ev.target;
+    if (f.id === 'recordForm') submitRecord();
+    else if (f.id === 'cfgForm') submitConfig();
+    else if (f.dataset.form === 'recheck') submitRecheck(f);
+    else if (f.dataset.form === 'edit-issue') submitEditIssue(f);
+    else if (f.dataset.form === 'site') submitSite(f);
+    else if (f.dataset.form === 'name') {
+      const v = $('#nmInput').value.replace(/\s+/g, ' ').trim();
+      if (!v) { showError($('#nmError'), 'Hãy nhập tên hiển thị.'); return; }
+      store.set('ht:name', v.slice(0, 60));
+      renderName();
+      closeSheet();
+      toast('Đã lưu tên hiển thị: ' + v.slice(0, 60));
+    }
+  });
+
+  document.addEventListener('input', ev => {
+    const t = ev.target;
+    if (t.closest('#recordForm')) {
+      if (t.id === 'fLat' || t.id === 'fLng') { locState.record = { accuracy: null, gpsTime: '' }; showLocInfo('record'); }
+      saveDraft();
+    } else if (t.closest('form[data-form="recheck"]')) {
+      saveRecheckDraft();
+    } else if (t.id === 'eLat' || t.id === 'eLng') {
+      locState.edit = { accuracy: null, gpsTime: '' };
+      showLocInfo('edit');
+    } else if (t.id === 'qText') {
+      renderList();
+    }
+  });
+  document.addEventListener('change', ev => {
+    const t = ev.target;
+    if (t.id === 'fSite') { delete t.dataset.want; if (t.value === '__new') { t.value = ''; if (requireName()) openSiteForm('', true); return; } }
+    if (t.id === 'recPhotoInput') { addPhotos('record', t.files).then(() => { t.value = ''; }); return; }
+    if (t.id === 'rcPhotoInput') { addPhotos('recheck', t.files).then(() => { t.value = ''; }); return; }
+    if (t.closest('.filters')) renderList();
+    if (t.closest('#recordForm')) saveDraft();
+    if (t.closest('form[data-form="recheck"]')) saveRecheckDraft();
+  });
+
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) syncNow(); });
+  window.addEventListener('online', syncNow);
+
+  setView('overview');
+  renderSync();
+  if (hasBackend) {
+    syncNow();
+    if (!getName()) openNameSheet('Chào anh/chị. Hãy đặt tên hiển thị để tổ biết ai đã ghi nhận. Có thể bỏ qua nếu chỉ xem.');
+  }
+}
+
+// Thẻ script nằm cuối trang nên các phần tử đã có sẵn; vẫn giữ thêm hai đường dự phòng.
+let started = false;
+function start() {
+  if (started || !document.getElementById('toast')) return;
+  started = true;
+  init();
+  document.documentElement.setAttribute('data-ready', '1');
+}
+start();
+document.addEventListener('DOMContentLoaded', start);
+window.addEventListener('load', start);
+
+})();
+</script>
+</body>
+</html>
