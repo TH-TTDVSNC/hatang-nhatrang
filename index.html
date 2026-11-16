@@ -23,6 +23,9 @@
   --danger: #A8200F;
   --tabs-h: 62px;
   --r: 6px;
+  --tree-g: #073B49;
+  --tree-a: #0A5C70;
+  --tree-i: #3D52B4;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
@@ -241,6 +244,20 @@ input::placeholder, textarea::placeholder { color: #7B8B91; }
 .tree .tree > summary { font-weight: 600; font-size: 0.9375rem; }
 .tree-title { overflow-wrap: anywhere; min-width: 0; }
 .tree .rows { margin: 0 0 8px; border: 0; border-radius: 0; background: none; }
+/* Ba cấp của cây: nhóm (chữ đậm, nền xanh đậm), địa chỉ (chữ đậm vừa, có vạch bên trái), hạng mục (chữ thường, có dấu chấm) */
+.tree.lv-g { border-width: 1.5px; border-color: var(--tree-g); }
+.tree.lv-g > summary { color: var(--tree-g); background: color-mix(in srgb, var(--tree-g) 12%, #fff); font-size: 1.0625rem; font-weight: 800; text-transform: none; border-radius: var(--r) var(--r) 0 0; }
+.tree.lv-g > summary .meta { color: var(--tree-g); }
+.tree.lv-a { margin-left: 8px; border-left: 4px solid var(--tree-a); }
+.tree.lv-a > summary { color: var(--tree-a); font-weight: 700; font-size: 0.9375rem; background: color-mix(in srgb, var(--tree-a) 7%, #fff); }
+.tree.lv-a > summary .meta { color: var(--tree-a); }
+.tree.lv-i { margin-left: 8px; border: 0; border-left: 2px dotted var(--tree-i); border-radius: 0; background: none; }
+.tree.lv-i > summary { color: var(--tree-i); font-weight: 600; font-size: 0.9375rem; padding: 8px 10px; }
+.tree.lv-i > summary::before { content: "• "; }
+.tree.lv-i > summary .meta { color: var(--muted); font-weight: 500; }
+.tree.lv-i .rows { margin-left: 4px; }
+.tree > summary .meta { font-weight: 500; font-size: 0.8125rem; }
+.color-field input[type="color"] { width: 100%; min-height: 48px; padding: 4px; border: 1.5px solid #8FA3AA; border-radius: var(--r); background: var(--surface); cursor: pointer; }
 
 </style>
 </head>
@@ -275,10 +292,6 @@ input::placeholder, textarea::placeholder { color: #7B8B91; }
     <h2 id="h-record">Ghi nhận hạng mục</h2>
     <div class="draft-note" id="draftNote" hidden></div>
     <form id="recordForm" novalidate autocomplete="off">
-      <div class="field">
-        <label for="fSite">Vị trí</label>
-        <select id="fSite" name="siteId" required></select>
-      </div>
       <div class="field">
         <label for="fGroup">Nhóm</label>
         <select id="fGroup" name="group" required></select>
@@ -361,7 +374,6 @@ input::placeholder, textarea::placeholder { color: #7B8B91; }
         <select id="qGroup" aria-label="Lọc theo nhóm"></select>
       </div>
       <div class="filter-row">
-        <select id="qSite" aria-label="Lọc theo vị trí"></select>
         <select id="qPriority" aria-label="Lọc theo ưu tiên"></select>
       </div>
       <label class="check"><input type="checkbox" id="qDeleted"> Hiện cả hạng mục đã xóa</label>
@@ -379,17 +391,29 @@ input::placeholder, textarea::placeholder { color: #7B8B91; }
     <div id="myMapsBox"></div>
   </section>
 
-  <!-- 5. VỊ TRÍ -->
-  <section class="view" id="v-sites" aria-labelledby="h-sites" hidden>
-    <h2 id="h-sites">Vị trí</h2>
-    <button type="button" class="btn" data-act="new-site">Thêm vị trí</button>
-    <ul class="rows" id="siteRows"></ul>
+  <!-- 5. CÀI ĐẶT -->
+  <section class="view" id="v-settings" aria-labelledby="h-settings" hidden>
+    <h2 id="h-settings">Cài đặt</h2>
+    <p class="hint">Màu chỉ lưu trên trình duyệt này, không ảnh hưởng dữ liệu hay các thiết bị khác. Thay đổi có hiệu lực ngay.</p>
+    <form id="themeForm" class="stack" novalidate>
+      <div class="field"><label for="tc-sea-deep">Thanh trên và tiêu đề</label><input type="color" id="tc-sea-deep" data-var="--sea-deep"></div>
+      <div class="field"><label for="tc-sea">Nút chính, đường viền, thanh tiến độ</label><input type="color" id="tc-sea" data-var="--sea"></div>
+      <div class="field"><label for="tc-paper">Nền trang</label><input type="color" id="tc-paper" data-var="--paper"></div>
+      <div class="field"><label for="tc-ink">Chữ thường</label><input type="color" id="tc-ink" data-var="--ink"></div>
+      <h3>Cây danh sách</h3>
+      <div class="field"><label for="tc-tree-g">Cấp 1: nhóm công việc</label><input type="color" id="tc-tree-g" data-var="--tree-g"></div>
+      <div class="field"><label for="tc-tree-a">Cấp 2: địa chỉ</label><input type="color" id="tc-tree-a" data-var="--tree-a"></div>
+      <div class="field"><label for="tc-tree-i">Cấp 3: hạng mục hư hỏng</label><input type="color" id="tc-tree-i" data-var="--tree-i"></div>
+      <div class="form-actions"><button type="button" class="btn ghost" data-act="theme-reset">Khôi phục màu mặc định</button></div>
+    </form>
   </section>
 
   <!-- 6. XUẤT -->
   <section class="view" id="v-export" aria-labelledby="h-export" hidden>
     <h2 id="h-export">Xuất dữ liệu</h2>
     <div class="stack">
+      <button type="button" class="btn primary" data-act="export-xlsx">Tải Excel thống kê (trạng thái, nhóm, ưu tiên)</button>
+      <p class="hint">File Excel có ba trang: Theo trạng thái, Theo nhóm, Theo ưu tiên. Số liệu chỉ tính hạng mục chưa bị xóa, lấy theo dữ liệu đã đồng bộ trên máy này.</p>
       <button type="button" class="btn" data-act="export-issues">Tải CSV hạng mục</button>
       <button type="button" class="btn" data-act="export-checks">Tải CSV lượt khảo sát</button>
       <button type="button" class="btn" data-act="export-kml">Tải KML (mở bằng Google Earth, My Maps)</button>
@@ -419,7 +443,7 @@ input::placeholder, textarea::placeholder { color: #7B8B91; }
   <button type="button" data-view="record"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Ghi nhận</span></button>
   <button type="button" data-view="list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg><span>Danh sách</span></button>
   <button type="button" data-view="map"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5L9 4zM9 4v13.5M15 6.5V20"/></svg><span>Bản đồ</span></button>
-  <button type="button" data-view="sites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.500C5 14.900 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg><span>Vị trí</span></button>
+  <button type="button" data-view="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg><span>Cài đặt</span></button>
   <button type="button" data-view="export"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg><span>Xuất</span></button>
 </nav>
 
@@ -845,9 +869,6 @@ function setOptions(el, html) {
   lastOptions.set(el, html);
   el.innerHTML = html;
 }
-function sitesSorted() {
-  return Array.from(S.sites.values()).sort((a, b) => a.name.localeCompare(b.name, 'vi'));
-}
 function allGroups() {
   const set = new Set(GROUPS);
   S.issues.forEach(i => { if (i.group) set.add(i.group); });
@@ -941,7 +962,6 @@ function setView(view) {
 function renderAll() {
   renderView();
   if (S.sheet && S.sheet.type === 'issue') renderIssueSheet(S.sheet.id, true);
-  if (S.sheet && S.sheet.type === 'site') renderSiteSheet(S.sheet.id, true);
 }
 
 function renderView() {
@@ -949,7 +969,7 @@ function renderView() {
   else if (S.view === 'record') renderRecordOptions();
   else if (S.view === 'list') renderList();
   else if (S.view === 'map') renderMap();
-  else if (S.view === 'sites') renderSites();
+  else if (S.view === 'settings') renderSettings();
   else if (S.view === 'export') renderExport();
 }
 
@@ -1018,14 +1038,13 @@ function renderListFilters() {
   const keep = id => $(id).value;
   setOptions($('#qStatus'), optionsHtml(STATUSES.map(s => ({ value: s, label: s })), keep('#qStatus'), 'Mọi trạng thái'));
   setOptions($('#qGroup'), optionsHtml(allGroups().map(s => ({ value: s, label: s })), keep('#qGroup'), 'Mọi nhóm'));
-  setOptions($('#qSite'), optionsHtml(sitesSorted().map(s => ({ value: s.id, label: s.name })), keep('#qSite'), 'Mọi vị trí'));
   setOptions($('#qPriority'), optionsHtml(PRIORITIES.map(s => ({ value: s, label: 'Ưu tiên: ' + s })), keep('#qPriority'), 'Mọi mức ưu tiên'));
 }
 
 function issueRow(i) {
   const cs = checksOf(i.id);
   const last = cs[0];
-  const where = [siteName(i.siteId), i.address].filter(Boolean).join(', ');
+  const where = i.address || '(chưa có địa chỉ)';
   const pk = PRIORITIES.indexOf(i.priority);
   return `<li>
     <button type="button" class="row${i.deletedAt ? ' is-deleted' : ''}" data-act="open-issue" data-id="${esc(i.id)}">
@@ -1044,17 +1063,16 @@ function issueRow(i) {
 
 function filteredIssues() {
   const q = norm($('#qText').value);
-  const st = $('#qStatus').value, g = $('#qGroup').value, site = $('#qSite').value, pr = $('#qPriority').value;
+  const st = $('#qStatus').value, g = $('#qGroup').value, pr = $('#qPriority').value;
   const showDeleted = $('#qDeleted').checked;
   return Array.from(S.issues.values()).filter(i => {
     if (i.deletedAt && !showDeleted) return false;
     if (st && i.status !== st) return false;
     if (g && i.group !== g) return false;
-    if (site && i.siteId !== site) return false;
     if (pr && i.priority !== pr) return false;
     if (q) {
       const last = checksOf(i.id)[0];
-      const hay = norm([i.item, i.address, i.group, siteName(i.siteId), i.recorder, last ? last.description : '', last ? last.recorder : '', last ? last.round : ''].join(' '));
+      const hay = norm([i.item, i.address, i.group, i.recorder, last ? last.description : '', last ? last.recorder : '', last ? last.round : ''].join(' '));
       if (hay.indexOf(q) < 0) return false;
     }
     return true;
@@ -1063,15 +1081,15 @@ function filteredIssues() {
 
 const openKeys = new Set();
 function cmpVi(a, b) { return String(a).localeCompare(String(b), 'vi'); }
-function addrOf(i) { return i.address || siteName(i.siteId) || '(chưa có địa chỉ)'; }
+function addrOf(i) { return i.address || '(chưa có địa chỉ)'; }
 
-function detailsBox(key, summary, inner) {
-  return `<details class="tree" data-key="${esc(key)}"${openKeys.has(key) ? ' open' : ''}><summary>${summary}</summary>${inner}</details>`;
+function detailsBox(key, summary, inner, lv) {
+  return `<details class="tree lv-${lv}" data-key="${esc(key)}"${openKeys.has(key) ? ' open' : ''}><summary>${summary}</summary>${inner}</details>`;
 }
 
 function sumOf(map) { let n = 0; map.forEach(v => { n += v instanceof Map ? sumOf(v) : v.length; }); return n; }
 
-/** Cây: Nhóm công việc → Địa chỉ → Nội dung hư hỏng → các ghi nhận (thứ tự theo danh sách). */
+/** Cây: Nhóm công việc (cấp 1) → Địa chỉ (cấp 2) → Nội dung hư hỏng (cấp 3) → các ghi nhận. Mỗi cấp một màu, chỉnh ở Cài đặt. */
 function renderTree(list) {
   const tree = new Map();
   list.forEach(i => {
@@ -1091,13 +1109,13 @@ function renderTree(list) {
         const recs = items.get(it);
         return detailsBox(`i|${g}|${a}|${it}`,
           `<span class="tree-title">${esc(it)}</span><span class="meta">${recs.length} ghi nhận</span>`,
-          `<ul class="rows">${recs.map(issueRow).join('')}</ul>`);
+          `<ul class="rows">${recs.map(issueRow).join('')}</ul>`, 'i');
       }).join('');
       return detailsBox(`a|${g}|${a}`,
-        `<span class="tree-title">${esc(a)}</span><span class="meta">${sumOf(items)} ghi nhận</span>`, innerI);
+        `<span class="tree-title">${esc(a)}</span><span class="meta">${sumOf(items)} ghi nhận</span>`, innerI, 'a');
     }).join('');
     return detailsBox(`g|${g}`,
-      `<span class="tree-title">${esc(g)}</span><span class="meta">${sumOf(addrs)} ghi nhận</span>`, inner);
+      `<span class="tree-title">${esc(g)}</span><span class="meta">${sumOf(addrs)} ghi nhận</span>`, inner, 'g');
   }).join('');
 }
 
@@ -1156,7 +1174,6 @@ function renderIssueSheet(id, keepScroll) {
       <dt>Trạng thái</dt><dd>${chip(i.status)}</dd>
       <dt>Ưu tiên</dt><dd>${esc(i.priority)}</dd>
       <dt>Nhóm</dt><dd>${esc(i.group)}</dd>
-      <dt>Vị trí</dt><dd>${esc(siteName(i.siteId))}</dd>
       <dt>Địa chỉ</dt><dd>${esc(i.address) || '(chưa có)'}</dd>
       <dt>Tọa độ</dt><dd>${coords ? `<a href="https://www.google.com/maps?q=${i.lat},${i.lng}" target="_blank" rel="noopener noreferrer">${i.lat.toFixed(6)}, ${i.lng.toFixed(6)}</a>${i.accuracy !== null && i.accuracy !== undefined ? ' (sai số khoảng ' + esc(i.accuracy) + ' m)' : ''}` : '(chưa có)'}</dd>
       <dt>Ghi nhận</dt><dd>${esc(fmtDT(i.createdAt))}, ${esc(i.recorder)}</dd>
@@ -1343,11 +1360,6 @@ async function readLink(target) {
 /* ---------- Ghi nhận ---------- */
 
 function renderRecordOptions() {
-  const sel = $('#fSite');
-  const cur = sel.dataset.want || sel.value;
-  setOptions(sel, optionsHtml(sitesSorted().map(s => ({ value: s.id, label: s.name + (s.area ? ' (' + s.area + ')' : '') })), cur, 'Chọn vị trí…') +
-    '<option value="__new">＋ Thêm vị trí mới…</option>');
-  if (cur && S.sites.has(cur)) { sel.value = cur; delete sel.dataset.want; }
   const g = $('#fGroup');
   const curG = g.value;
   setOptions(g, optionsHtml(allGroups().map(s => ({ value: s, label: s })), curG, 'Chọn nhóm…'));
@@ -1366,10 +1378,8 @@ function setRadio(form, name, value) {
 
 function collectRecord() {
   const f = $('#recordForm');
-  const site = f.elements.siteId.value;
   return {
     issueId: R.issueId, checkId: R.checkId,
-    siteId: site === '__new' ? '' : (site || f.elements.siteId.dataset.want || ''),
     group: f.elements.group.value, item: f.elements.itemName.value,
     priority: radioValue(f, 'priority'), address: f.elements.address.value,
     lat: f.elements.lat.value, lng: f.elements.lng.value,
@@ -1401,7 +1411,6 @@ function fillRecord(d) {
   R.issueId = d.issueId || uid('I');
   R.checkId = d.checkId || uid('C');
   R.photos = (d.photos || []).filter(p => typeof p === 'string' && p.indexOf('data:image/jpeg;base64,') === 0).slice(0, MAX_PHOTOS);
-  f.elements.siteId.dataset.want = d.siteId || '';
   renderRecordOptions();
   f.elements.group.value = d.group || '';
   f.elements.itemName.value = d.item || '';
@@ -1419,7 +1428,7 @@ function fillRecord(d) {
 
 function resetRecord(keep) {
   keep = keep || {};
-  fillRecord({ siteId: keep.siteId, group: keep.group, round: keep.round });
+  fillRecord({ group: keep.group, round: keep.round });
   store.del('ht:draft');
   $('#draftNote').hidden = true;
   showError($('#recError'), '');
@@ -1433,7 +1442,6 @@ async function submitRecord() {
   const d = collectRecord();
   const f = $('#recordForm');
   const fail = (msg, el) => { showError(errEl, msg); if (el) el.focus(); };
-  if (!d.siteId) return fail('Hãy chọn vị trí, hoặc thêm vị trí mới.', f.elements.siteId);
   if (!d.group) return fail('Hãy chọn nhóm.', f.elements.group);
   if (!d.item.trim()) return fail('Hãy nhập tên hạng mục.', f.elements.itemName);
   const loc = checkLatLngText(d.lat, d.lng);
@@ -1447,14 +1455,14 @@ async function submitRecord() {
   try {
     const r = await call('createIssue', {
       issue: {
-        id: d.issueId, siteId: d.siteId, group: d.group, item: d.item, priority: d.priority, address: d.address,
+        id: d.issueId, group: d.group, item: d.item, priority: d.priority, address: d.address,
         lat: loc.empty ? null : loc.lat, lng: loc.empty ? null : loc.lng,
         accuracy: loc.empty ? null : d.accuracy, gpsTime: loc.empty ? '' : d.gpsTime
       },
       check: { id: d.checkId, round: d.round, status: d.status, description: d.description, photos: d.photos }
     }, { write: true, timeout: 90000 });
     store.set('ht:lastRound', d.round);
-    resetRecord({ siteId: d.siteId, group: d.group, round: d.round });
+    resetRecord({ group: d.group, round: d.round });
     applyWrite(r);
     toast('Máy chủ đã xác nhận: đã ghi "' + r.issue.item + '".');
     window.scrollTo(0, 0);
@@ -1485,7 +1493,7 @@ function openRecheck(id) {
   const round = d.round !== undefined ? d.round : (store.get('ht:lastRound') || '');
   openSheet('Khảo sát lại', `
     <form data-form="recheck" novalidate autocomplete="off">
-      <p><b>${esc(i.item)}</b><br><span class="hint">${esc([siteName(i.siteId), i.address].filter(Boolean).join(', '))}. Hiện là: ${esc(i.status)}.</span></p>
+      <p><b>${esc(i.item)}</b><br><span class="hint">${esc(i.address || '(chưa có địa chỉ)')}. Hiện là: ${esc(i.status)}.</span></p>
       ${d.savedAt ? `<div class="draft-note">Đã khôi phục bản nháp lưu lúc ${esc(fmtDT(d.savedAt))}.</div>` : ''}
       <fieldset class="field seg"><legend>Trạng thái lần này</legend>${segHtml('rcStatus', STATUSES, d.status || i.status, true)}</fieldset>
       <div class="field"><label for="rcRound">Đợt khảo sát</label><input id="rcRound" name="rcRound" type="text" maxlength="60" list="roundList" value="${esc(round)}"></div>
@@ -1538,7 +1546,6 @@ function openEditIssue(id) {
   locState.edit = { accuracy: i.accuracy === undefined ? null : i.accuracy, gpsTime: i.gpsTime || '' };
   openSheet('Sửa hạng mục', `
     <form data-form="edit-issue" data-id="${esc(id)}" novalidate autocomplete="off">
-      <div class="field"><label for="eSite">Vị trí</label><select id="eSite" name="siteId">${optionsHtml(sitesSorted().map(s => ({ value: s.id, label: s.name })), i.siteId)}</select></div>
       <div class="field"><label for="eGroup">Nhóm</label><select id="eGroup" name="group">${optionsHtml(allGroups().map(s => ({ value: s, label: s })), i.group)}</select></div>
       <div class="field"><label for="eItem">Hạng mục</label><input id="eItem" name="itemName" type="text" maxlength="120" value="${esc(i.item)}"></div>
       <fieldset class="field seg"><legend>Ưu tiên</legend>${segHtml('ePriority', PRIORITIES, i.priority)}</fieldset>
@@ -1576,7 +1583,6 @@ async function submitEditIssue(form) {
   const patch = {};
   const item = form.elements.itemName.value.trim(), address = form.elements.address.value.trim();
   if (!item) return showError(errEl, 'Hãy nhập tên hạng mục.');
-  if (form.elements.siteId.value !== i.siteId) patch.siteId = form.elements.siteId.value;
   if (form.elements.group.value !== i.group) patch.group = form.elements.group.value;
   if (item !== i.item) patch.item = item;
   const pr = radioValue(form, 'ePriority');
@@ -1631,100 +1637,214 @@ async function restoreIssue(id) {
   } catch (e) { toast('Chưa khôi phục được: ' + e.message, true); }
 }
 
-/* ---------- Vị trí ---------- */
+/* ---------- Cài đặt màu giao diện (lưu trên trình duyệt) ---------- */
 
-function renderSites() {
-  const live = liveIssues();
-  const rows = sitesSorted().map(s => {
-    const mine = live.filter(i => i.siteId === s.id);
-    const open = mine.filter(i => i.status !== 'Đã khắc phục').length;
-    return `<li><button type="button" class="row" data-act="open-site" data-id="${esc(s.id)}">
-      <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="#0A5C70" stroke-width="2" aria-hidden="true"><path d="M12 21s7-6.1 7-11.500A7 7 0 0 0 5 9.500C5 14.900 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>
-      <span><b>${esc(s.name)}</b>
-        ${s.area ? `<span class="meta">${esc(s.area)}</span>` : ''}
-        <span class="meta">${mine.length} hạng mục${mine.length ? ', ' + open + ' chưa khắc phục xong' : ''}</span></span>
-    </button></li>`;
+const THEME_KEYS = [
+  ['--sea-deep', '#073B49'], ['--sea', '#0A5C70'], ['--paper', '#EEF3F4'], ['--ink', '#0F252D'],
+  ['--tree-g', '#073B49'], ['--tree-a', '#0A5C70'], ['--tree-i', '#3D52B4']
+];
+const HEX_RE = /^#[0-9a-fA-F]{6}$/;
+function themeSaved() { const t = store.get('ht:theme'); return t && typeof t === 'object' ? t : {}; }
+function themeValue(key, def) { const v = themeSaved()[key]; return HEX_RE.test(v || '') ? v : def; }
+function applyTheme() {
+  THEME_KEYS.forEach(([k, def]) => document.documentElement.style.setProperty(k, themeValue(k, def)));
+}
+function renderSettings() {
+  THEME_KEYS.forEach(([k, def]) => {
+    const input = document.querySelector('#themeForm input[data-var="' + k + '"]');
+    if (input && document.activeElement !== input) input.value = themeValue(k, def);
   });
-  $('#siteRows').innerHTML = rows.join('');
-  if (!rows.length && S.loaded) $('#siteRows').innerHTML = '<li><div class="row"><span></span><span class="meta">Chưa có vị trí nào. Bấm "Thêm vị trí" để tạo, ví dụ: Công viên bờ biển đoạn Quảng trường 2/4.</span></div></li>';
+}
+function setThemeVar(key, value) {
+  if (!HEX_RE.test(value || '')) return;
+  document.documentElement.style.setProperty(key, value);
+  const saved = themeSaved();
+  saved[key] = value;
+  store.set('ht:theme', saved);
+}
+function resetTheme() {
+  store.del('ht:theme');
+  THEME_KEYS.forEach(([k]) => document.documentElement.style.removeProperty(k));
+  applyTheme();
+  renderSettings();
+  toast('Đã khôi phục màu mặc định.');
 }
 
-function renderSiteSheet(id, keepScroll) {
-  const s = S.sites.get(id);
-  if (!s) { closeSheet(); return; }
-  const top = keepScroll ? $('#sheetBody').scrollTop : 0;
-  const issues = liveIssues().filter(i => i.siteId === id);
-  const byAddr = new Map();
-  issues.forEach(i => {
-    const key = norm(i.address) || '';
-    if (!byAddr.has(key)) byAddr.set(key, { label: i.address || 'Chưa có địa chỉ', checks: [] });
-    checksOf(i.id).forEach(c => byAddr.get(key).checks.push(c));
-  });
-  const blocks = Array.from(byAddr.values()).sort((a, b) => a.label.localeCompare(b.label, 'vi', { numeric: true })).map(b => {
-    b.checks.sort(newestFirst);
-    return `<div class="addr-block"><h4>${esc(b.label)}</h4><ol class="timeline">${b.checks.map(c => checkItemHtml(c, true)).join('')}</ol></div>`;
-  });
-  const html = `
-    <dl class="facts">
-      <dt>Khu vực</dt><dd>${esc(s.area) || '(chưa có)'}</dd>
-      <dt>Ghi chú</dt><dd style="white-space:pre-wrap">${esc(s.note) || '(chưa có)'}</dd>
-      <dt>Tạo lúc</dt><dd>${esc(fmtDT(s.createdAt))}</dd>
-    </dl>
-    <div class="form-actions" style="margin-bottom:22px">
-      <button type="button" class="btn primary" data-act="record-here" data-id="${esc(id)}">Ghi nhận tại đây</button>
-      <button type="button" class="btn" data-act="edit-site" data-id="${esc(id)}">Sửa vị trí</button>
-      <button type="button" class="btn ghost" data-act="open-audit" data-id="${esc(id)}">Nhật ký</button>
-    </div>
-    <h3 style="margin-top:0">Lịch sử theo địa chỉ</h3>
-    ${blocks.length ? blocks.join('') : '<p class="hint">Chưa có hạng mục nào tại vị trí này.</p>'}`;
-  if (keepScroll && S.sheet && S.sheet.type === 'site' && S.sheet.id === id) {
-    $('#sheetBody').innerHTML = html;
-    $('#sheetTitle').textContent = s.name;
-    $('#sheetBody').scrollTop = top;
-  } else {
-    openSheet(s.name, html, { type: 'site', id });
+/* ---------- Xuất Excel thống kê (tạo .xlsx ngay trên trình duyệt, không cần thư viện ngoài) ---------- */
+
+const CRC_TABLE = (function () {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
   }
+  return t;
+})();
+function crc32(bytes) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function concatBytes(list) {
+  const total = list.reduce((a, p) => a + p.length, 0);
+  const out = new Uint8Array(total);
+  let o = 0;
+  list.forEach(p => { out.set(p, o); o += p.length; });
+  return out;
+}
+/** Zip không nén (kiểu store), đủ để Excel đọc. files: [{ name, data: Uint8Array }] */
+function zipBytes(files) {
+  const enc = new TextEncoder();
+  const now = new Date();
+  const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | Math.floor(now.getSeconds() / 2);
+  const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+  const parts = [], central = [];
+  let offset = 0;
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = f.data, crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true);
+    lh.setUint16(8, 0, true); lh.setUint16(10, dosTime, true); lh.setUint16(12, dosDate, true);
+    lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true);
+    lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(new Uint8Array(lh.buffer), name, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true);
+    ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true); ch.setUint16(12, dosTime, true);
+    ch.setUint16(14, dosDate, true); ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true);
+    ch.setUint32(24, data.length, true); ch.setUint16(28, name.length, true);
+    ch.setUint32(42, offset, true);
+    central.push(new Uint8Array(ch.buffer), name);
+    offset += 30 + name.length + data.length;
+  });
+  const cdSize = central.reduce((a, p) => a + p.length, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true);
+  end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+  return concatBytes(parts.concat(central, [new Uint8Array(end.buffer)]));
+}
+function colName(n) {
+  let s = '';
+  n = n + 1;
+  while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); }
+  return s;
+}
+/* Ô: chuỗi | số | { v, s } | { f, s }. s: 0 thường, 1 tiêu đề, 2 đậm, 3 phần trăm */
+function sheetXml(sheet) {
+  const cols = (sheet.widths || []).map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('');
+  const rows = sheet.rows.map((row, r) => {
+    const cells = row.map((c, k) => {
+      if (c === null || c === undefined || c === '') return '';
+      const o = (typeof c === 'object') ? c : { v: c };
+      const ref = colName(k) + (r + 1);
+      const sAttr = o.s ? ` s="${o.s}"` : '';
+      if (o.f !== undefined) return `<c r="${ref}"${sAttr}><f>${xml(o.f)}</f></c>`;
+      if (typeof o.v === 'number') return `<c r="${ref}"${sAttr}><v>${o.v}</v></c>`;
+      return `<c r="${ref}" t="inlineStr"${sAttr}><is><t xml:space="preserve">${xml(o.v)}</t></is></c>`;
+    }).join('');
+    return `<row r="${r + 1}">${cells}</row>`;
+  }).join('');
+  return '<' + '?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    '<sheetViews><sheetView workbookViewId="0"/></sheetViews>' +
+    (cols ? `<cols>${cols}</cols>` : '') + `<sheetData>${rows}</sheetData></worksheet>`;
+}
+function xlsxBytes(sheets) {
+  const enc = t => new TextEncoder().encode(t);
+  const H = '<' + '?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  const NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+  const RELS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  const ct = '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+    '<Default Extension="xml" ContentType="application/xml"/>' +
+    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+    '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
+    sheets.map((_, k) => `<Override PartName="/xl/worksheets/sheet${k + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('') +
+    '</Types>';
+  const rootRels = `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${RELS}/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
+  const wb = `<workbook xmlns="${NS}" xmlns:r="${RELS}"><sheets>` +
+    sheets.map((sh, k) => `<sheet name="${xml(sh.name)}" sheetId="${k + 1}" r:id="rId${k + 1}"/>`).join('') +
+    '</sheets><calcPr calcId="191029" fullCalcOnLoad="1"/></workbook>';
+  const wbRels = `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">` +
+    sheets.map((_, k) => `<Relationship Id="rId${k + 1}" Type="${RELS}/worksheet" Target="worksheets/sheet${k + 1}.xml"/>`).join('') +
+    `<Relationship Id="rId${sheets.length + 1}" Type="${RELS}/styles" Target="styles.xml"/></Relationships>`;
+  const styles = `<styleSheet xmlns="${NS}">` +
+    '<numFmts count="0"/>' +
+    '<fonts count="2"><font><sz val="11"/><name val="Arial"/></font><font><b/><sz val="11"/><name val="Arial"/></font></fonts>' +
+    '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>' +
+    '<fill><patternFill patternType="solid"><fgColor rgb="FFDCEEF2"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+    '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>' +
+    '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+    '<cellXfs count="4">' +
+    '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+    '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>' +
+    '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>' +
+    '<xf numFmtId="10" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+    '</cellXfs></styleSheet>';
+  const files = [
+    { name: '[Content_Types].xml', data: enc(H + ct) },
+    { name: '_rels/.rels', data: enc(H + rootRels) },
+    { name: 'xl/workbook.xml', data: enc(H + wb) },
+    { name: 'xl/_rels/workbook.xml.rels', data: enc(H + wbRels) },
+    { name: 'xl/styles.xml', data: enc(H + styles) }
+  ];
+  sheets.forEach((sh, k) => files.push({ name: `xl/worksheets/sheet${k + 1}.xml`, data: enc(sheetXml(sh)) }));
+  return zipBytes(files);
 }
 
-function openSiteForm(id, fromRecord) {
-  const s = id ? S.sites.get(id) : null;
-  openSheet(s ? 'Sửa vị trí' : 'Thêm vị trí', `
-    <form data-form="site" data-id="${esc(id || '')}" data-new-id="${uid('S')}" data-from-record="${fromRecord ? '1' : ''}" novalidate autocomplete="off">
-      <div class="field"><label for="sName">Tên vị trí</label><input id="sName" name="name" type="text" maxlength="80" value="${esc(s ? s.name : '')}" placeholder="Ví dụ: Công viên bờ biển, đoạn Quảng trường 2/4" autofocus></div>
-      <div class="field"><label for="sArea">Khu vực</label><input id="sArea" name="area" type="text" maxlength="80" value="${esc(s ? s.area : '')}" placeholder="Tuyến đường, tổ dân phố"></div>
-      <div class="field"><label for="sNote">Ghi chú</label><textarea id="sNote" name="note" rows="2" maxlength="500">${esc(s ? s.note : '')}</textarea></div>
-      <p class="error" id="sError" role="alert" hidden></p>
-      <div class="form-actions"><button type="submit" class="btn primary big" id="sSubmit">${s ? 'Lưu thay đổi' : 'Thêm vị trí'}</button></div>
-    </form>`, { type: 'form' });
+/** Bảng dạng ma trận: hàng là khóa (nhóm hoặc ưu tiên), cột là bốn trạng thái và tổng. */
+function matrixSheet(name, title, keyHeader, keys, keyOf, issues) {
+  const rows = [[{ v: title, s: 2 }], ['Cập nhật lúc ' + fmtDT(new Date().toISOString()) + '. Chỉ tính hạng mục chưa bị xóa, tổng ' + issues.length + ' hạng mục.'], [],
+    [{ v: keyHeader, s: 1 }].concat(STATUSES.map(st => ({ v: st, s: 1 })), [{ v: 'Tổng', s: 1 }])];
+  const first = rows.length + 1;
+  keys.forEach(key => {
+    const r = rows.length + 1;
+    const counts = STATUSES.map(st => issues.filter(i => keyOf(i) === key && i.status === st).length);
+    rows.push([key].concat(counts, [{ f: `SUM(B${r}:E${r})` }]));
+  });
+  const last = rows.length;
+  const tr = rows.length + 1;
+  const sums = [1, 2, 3, 4, 5].map(k => ({ f: `SUM(${colName(k)}${first}:${colName(k)}${last})`, s: 2 }));
+  rows.push([{ v: 'Tổng cộng', s: 2 }].concat(sums));
+  return { name, rows, widths: [34, 16, 16, 16, 16, 12] };
 }
-
-async function submitSite(form) {
-  if (!requireName()) return;
-  const errEl = $('#sError');
-  showError(errEl, '');
-  const name = form.elements.name.value.trim(), area = form.elements.area.value.trim(), note = form.elements.note.value.trim();
-  if (!name) return showError(errEl, 'Hãy nhập tên vị trí.');
-  const id = form.dataset.id;
-  const btn = $('#sSubmit');
-  btn.disabled = true;
-  try {
-    let r;
-    if (id) r = await call('updateSite', { id, patch: { name, area, note } }, { write: true });
-    else r = await call('createSite', { site: { id: form.dataset.newId, name, area, note } }, { write: true });
-    const fromRecord = form.dataset.fromRecord === '1';
-    S.sheet = null;
-    closeSheet();
-    if (fromRecord) $('#fSite').dataset.want = r.site.id;
-    applyWrite(r);
-    if (fromRecord) { renderRecordOptions(); saveDraft(); } else renderSiteSheet(r.site.id);
-    toast('Máy chủ đã xác nhận: đã lưu vị trí "' + r.site.name + '".');
-  } catch (e) {
-    showError(errEl, 'Chưa lưu được: ' + e.message);
-    btn.disabled = false;
-  }
+function xlsxSheets(issues) {
+  const cnt = st => issues.filter(i => i.status === st).length;
+  const total = issues.length;
+  const first = 5;                         // dòng đầu tiên có dữ liệu
+  const totalRow = first + STATUSES.length;
+  const s1 = [[{ v: 'Thống kê theo trạng thái', s: 2 }],
+    ['Cập nhật lúc ' + fmtDT(new Date().toISOString()) + '. Chỉ tính hạng mục chưa bị xóa, tổng ' + total + ' hạng mục.'], [],
+    [{ v: 'Trạng thái', s: 1 }, { v: 'Số hạng mục', s: 1 }, { v: 'Tỷ lệ', s: 1 }]];
+  STATUSES.forEach((st, k) => {
+    const r = first + k;
+    s1.push([st, cnt(st), { f: `IF($B$${totalRow}=0,0,B${r}/$B$${totalRow})`, s: 3 }]);
+  });
+  s1.push([{ v: 'Tổng cộng', s: 2 }, { f: `SUM(B${first}:B${totalRow - 1})`, s: 2 }, { f: `SUM(C${first}:C${totalRow - 1})`, s: 3 }]);
+  const byStatus = { name: 'Theo trạng thái', rows: s1, widths: [30, 16, 14] };
+  const groups = Array.from(new Set(allGroups().concat(issues.map(i => i.group || '(chưa có nhóm)'))));
+  const byGroup = matrixSheet('Theo nhóm', 'Thống kê theo nhóm công việc', 'Nhóm công việc', groups, i => i.group || '(chưa có nhóm)', issues);
+  const byPriority = matrixSheet('Theo ưu tiên', 'Thống kê theo mức ưu tiên', 'Mức ưu tiên', PRIORITIES, i => i.priority || '(chưa có)', issues);
+  return [byStatus, byGroup, byPriority];
 }
-
-/* ---------- Bản đồ ---------- */
+function downloadBytes(name, bytes, mime) {
+  const url = URL.createObjectURL(new Blob([bytes], { type: mime }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+}
+function doExportXlsx() {
+  const issues = liveIssues();
+  if (!issues.length) { toast('Chưa có hạng mục nào để xuất.', true); return; }
+  downloadBytes('thong-ke-' + stamp() + '.xlsx', xlsxBytes(xlsxSheets(issues)),
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('Đã tạo file Excel thống kê. Nếu không thấy tải về, hãy mở trang bằng Chrome hoặc Safari.');
+}
 
 function ensureLeaflet() {
   if (window.L && window.L.map) return Promise.resolve(true);
@@ -1834,12 +1954,11 @@ function stamp() {
 }
 
 function issuesCsv() {
-  const head = ['id', 'vị trí', 'khu vực', 'nhóm', 'hạng mục', 'ưu tiên', 'địa chỉ', 'lat', 'lng', 'độ chính xác (m)', 'thời điểm GPS',
+  const head = ['id', 'nhóm', 'hạng mục', 'ưu tiên', 'địa chỉ', 'lat', 'lng', 'độ chính xác (m)', 'thời điểm GPS',
     'người ghi nhận', 'thời điểm ghi nhận', 'trạng thái mới nhất', 'số lượt khảo sát', 'lượt mới nhất lúc', 'mô tả mới nhất', 'đã xóa lúc', 'người xóa'];
   const rows = exportSet().map(i => {
-    const s = S.sites.get(i.siteId) || {};
     const cs = checksOf(i.id);
-    return [i.id, s.name || '', s.area || '', i.group, i.item, i.priority, i.address,
+    return [i.id, i.group, i.item, i.priority, i.address,
       hasCoords(i) ? i.lat : '', hasCoords(i) ? i.lng : '', typeof i.accuracy === 'number' ? i.accuracy : '', i.gpsTime,
       i.recorder, i.createdAt, i.status, cs.length, cs[0] ? cs[0].createdAt : '', cs[0] ? cs[0].description : '', i.deletedAt, i.deletedBy];
   });
@@ -1847,11 +1966,11 @@ function issuesCsv() {
 }
 
 function checksCsv() {
-  const head = ['id lượt', 'id hạng mục', 'hạng mục', 'vị trí', 'địa chỉ', 'đợt khảo sát', 'trạng thái', 'mô tả', 'ảnh 1', 'ảnh 2', 'người ghi nhận', 'thời điểm'];
+  const head = ['id lượt', 'id hạng mục', 'hạng mục', 'địa chỉ', 'đợt khảo sát', 'trạng thái', 'mô tả', 'ảnh 1', 'ảnh 2', 'người ghi nhận', 'thời điểm'];
   const rows = [];
   exportSet().forEach(i => {
     checksOf(i.id).slice().reverse().forEach(c => {
-      rows.push([c.id, i.id, i.item, siteName(i.siteId), i.address, c.round, c.status, c.description,
+      rows.push([c.id, i.id, i.item, i.address, c.round, c.status, c.description,
         photoLabel((c.photos || [])[0]), photoLabel((c.photos || [])[1]), c.recorder, c.createdAt]);
     });
   });
@@ -1863,10 +1982,10 @@ function kmlText() {
   const styles = STATUSES.map((s, k) => `<Style id="st${k}"><IconStyle><color>${colors[k]}</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/wht-pushpin.png</href></Icon></IconStyle></Style>`).join('');
   const marks = exportSet().filter(hasCoords).map(i => {
     const last = checksOf(i.id)[0];
-    const lines = ['Trạng thái: ' + i.status, 'Ưu tiên: ' + i.priority, 'Nhóm: ' + i.group, 'Vị trí: ' + siteName(i.siteId), 'Địa chỉ: ' + (i.address || ''),
+    const lines = ['Trạng thái: ' + i.status, 'Ưu tiên: ' + i.priority, 'Nhóm: ' + i.group, 'Địa chỉ: ' + (i.address || ''),
       last ? 'Lượt mới nhất: ' + fmtDT(last.createdAt) + ', ' + last.recorder : '', last && last.description ? 'Mô tả: ' + last.description : '',
       i.deletedAt ? 'ĐÃ XÓA lúc ' + fmtDT(i.deletedAt) : ''].filter(Boolean);
-    const data = [['trạng thái', i.status], ['ưu tiên', i.priority], ['nhóm', i.group], ['vị trí', siteName(i.siteId)], ['địa chỉ', i.address], ['id', i.id]];
+    const data = [['trạng thái', i.status], ['ưu tiên', i.priority], ['nhóm', i.group], ['địa chỉ', i.address], ['id', i.id]];
     return `<Placemark><name>${xml(i.item)}</name><description>${xml(lines.join('\n'))}</description><styleUrl>#st${statusIndex(i.status)}</styleUrl>` +
       `<ExtendedData>${data.map(d => `<Data name="${xml(d[0])}"><value>${xml(d[1])}</value></Data>`).join('')}</ExtendedData>` +
       `<Point><coordinates>${i.lng},${i.lat},0</coordinates></Point></Placemark>`;
@@ -1962,10 +2081,8 @@ const ACTIONS = {
   'filter-group': el => { setView('list'); $('#qGroup').value = el.dataset.v; $('#qStatus').value = ''; renderList(); },
   'toggle-status': el => { const s = el.dataset.v; if (mapState.hidden.has(s)) mapState.hidden.delete(s); else mapState.hidden.add(s); renderMap(); },
   'retry-map': () => { mapState.mode = null; mapState.loading = null; renderMap(); },
-  'new-site': () => { if (requireName()) openSiteForm('', false); },
-  'open-site': el => renderSiteSheet(el.dataset.id),
-  'edit-site': el => openSiteForm(el.dataset.id, false),
-  'record-here': el => { const id = el.dataset.id; closeSheet(); $('#fSite').dataset.want = id; setView('record'); $('#fSite').value = id; saveDraft(); },
+  'export-xlsx': () => doExportXlsx(),
+  'theme-reset': () => resetTheme(),
   'export-issues': () => doExport('issues'),
   'export-checks': () => doExport('checks'),
   'export-kml': () => doExport('kml')
@@ -1974,6 +2091,7 @@ const ACTIONS = {
 function init() {
   $('#fPriority').insertAdjacentHTML('beforeend', segHtml('priority', PRIORITIES, 'Trung bình'));
   $('#fStatus').insertAdjacentHTML('beforeend', segHtml('status', STATUSES, STATUSES[0], true));
+  applyTheme();
   renderName();
   loadCache();
 
@@ -2007,7 +2125,6 @@ function init() {
     else if (f.id === 'cfgForm') submitConfig();
     else if (f.dataset.form === 'recheck') submitRecheck(f);
     else if (f.dataset.form === 'edit-issue') submitEditIssue(f);
-    else if (f.dataset.form === 'site') submitSite(f);
     else if (f.dataset.form === 'name') {
       const v = $('#nmInput').value.replace(/\s+/g, ' ').trim();
       if (!v) { showError($('#nmError'), 'Hãy nhập tên hiển thị.'); return; }
@@ -2020,6 +2137,7 @@ function init() {
 
   document.addEventListener('input', ev => {
     const t = ev.target;
+    if (t.closest && t.closest('#themeForm') && t.dataset.var) { setThemeVar(t.dataset.var, t.value); return; }
     if (t.closest('#recordForm')) {
       if (t.id === 'fLat' || t.id === 'fLng') { locState.record = { accuracy: null, gpsTime: '' }; showLocInfo('record'); }
       saveDraft();
@@ -2034,7 +2152,6 @@ function init() {
   });
   document.addEventListener('change', ev => {
     const t = ev.target;
-    if (t.id === 'fSite') { delete t.dataset.want; if (t.value === '__new') { t.value = ''; if (requireName()) openSiteForm('', true); return; } }
     if (t.id === 'recPhotoInput') { addPhotos('record', t.files).then(() => { t.value = ''; }); return; }
     if (t.id === 'rcPhotoInput') { addPhotos('recheck', t.files).then(() => { t.value = ''; }); return; }
     if (t.closest('.filters')) renderList();
