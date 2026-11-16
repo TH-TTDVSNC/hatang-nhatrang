@@ -1494,8 +1494,8 @@ function openRecheck(id) {
   openSheet('Khảo sát lại', `
     <form data-form="recheck" novalidate autocomplete="off">
       <p><b>${esc(i.item)}</b><br><span class="hint">${esc(i.address || '(chưa có địa chỉ)')}. Hiện là: ${esc(i.status)}.</span></p>
-      ${d.savedAt ? `<div class="draft-note">Đã khôi phục bản nháp lưu lúc ${esc(fmtDT(d.savedAt))}.</div>` : ''}
-      <fieldset class="field seg"><legend>Trạng thái lần này</legend>${segHtml('rcStatus', STATUSES, d.status || i.status, true)}</fieldset>
+      ${d.savedAt ? `<div class="draft-note">Đã khôi phục bản nháp lưu lúc ${esc(fmtDT(d.savedAt))}. Trạng thái luôn bắt đầu từ trạng thái hiện tại; hãy chọn lại nếu cần.</div>` : ''}
+      <fieldset class="field seg"><legend>Trạng thái lần này</legend>${segHtml('rcStatus', STATUSES, i.status, true)}</fieldset>
       <div class="field"><label for="rcRound">Đợt khảo sát</label><input id="rcRound" name="rcRound" type="text" maxlength="60" list="roundList" value="${esc(round)}"></div>
       <div class="field"><label for="rcDesc">Mô tả hiện trạng</label><textarea id="rcDesc" name="rcDesc" rows="3" maxlength="2000">${esc(d.description || '')}</textarea></div>
       <div class="field">
