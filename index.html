@@ -311,7 +311,7 @@ input::placeholder, textarea::placeholder { color: #7B8B91; }
       <fieldset class="field loc">
         <legend>Tọa độ</legend>
         <div class="loc-actions">
-          <button type="button" class="btn" data-act="gps" data-target="record">Lấy vị trí GPS</button>
+          <button type="button" class="btn" data-act="gps" data-target="record">Lấy vị trí từ điện thoại</button>
           <button type="button" class="btn ghost" data-act="toggle-link" data-target="record">Dán liên kết Google Maps</button>
         </div>
         <div class="loc-link" id="recLinkBox" hidden>
@@ -331,7 +331,7 @@ input::placeholder, textarea::placeholder { color: #7B8B91; }
             <input id="fLng" name="lng" type="text" inputmode="decimal" placeholder="109.196700">
           </div>
         </div>
-        <p class="hint" id="recLocInfo">Bấm "Lấy vị trí GPS", dán liên kết, hoặc gõ tọa độ vào hai ô trên.</p>
+        <p class="hint" id="recLocInfo">Bấm "Lấy vị trí từ điện thoại", dán liên kết, hoặc gõ tọa độ vào hai ô trên.</p>
       </fieldset>
 
       <fieldset class="field seg" id="fStatus">
@@ -1303,7 +1303,7 @@ function showLocInfo(target, message) {
   if (!e.info) return;
   if (message) { e.info.textContent = message; return; }
   const c = checkLatLngText(e.lat.value, e.lng.value);
-  if (c.empty) { e.info.textContent = 'Bấm "Lấy vị trí GPS", dán liên kết, hoặc gõ tọa độ vào hai ô trên.'; return; }
+  if (c.empty) { e.info.textContent = 'Bấm "Lấy vị trí từ điện thoại", dán liên kết, hoặc gõ tọa độ vào hai ô trên.'; return; }
   if (c.error) { e.info.textContent = c.error; return; }
   const st = locState[target];
   const parts = [];
@@ -1322,18 +1322,40 @@ function setCoords(target, lat, lng, accuracy, gpsTime) {
   if (target === 'record') saveDraft();
 }
 
-function getGps(target) {
-  if (!navigator.geolocation) { showLocInfo(target, 'Trình duyệt này không hỗ trợ GPS. Hãy dán liên kết Google Maps hoặc gõ tọa độ.'); return; }
-  showLocInfo(target, 'Đang lấy vị trí… Hãy đứng ở chỗ thoáng và cho phép trang dùng vị trí.');
+// Hướng dẫn bật vị trí trên điện thoại. Trang web không thể tự bật được, nên ứng dụng kiểm tra và hướng dẫn người dùng.
+const LOC_ON_HELP = 'Trên điện thoại, hãy bật Vị trí và chọn chế độ chính xác cao (Android: Cài đặt → Vị trí → Độ chính xác cao; iPhone: Cài đặt → Quyền riêng tư → Dịch vụ định vị → bật, và bật "Vị trí chính xác" cho trình duyệt).';
+const LOC_SITE_HELP = 'Trong trình duyệt, bấm biểu tượng ổ khóa cạnh địa chỉ trang → Quyền → Vị trí → Cho phép, rồi bấm lại.';
+
+async function gpsPermissionState() {
+  try {
+    if (navigator.permissions && navigator.permissions.query) {
+      const st = await navigator.permissions.query({ name: 'geolocation' });
+      return st.state; // 'granted' | 'prompt' | 'denied'
+    }
+  } catch (e) { /* một số trình duyệt không hỗ trợ kiểm tra quyền */ }
+  return 'unknown';
+}
+
+async function getGps(target) {
+  if (!navigator.geolocation) { showLocInfo(target, 'Thiết bị hoặc trình duyệt này không hỗ trợ vị trí. Hãy dán liên kết Google Maps hoặc gõ tọa độ.'); return; }
+  if (!window.isSecureContext) { showLocInfo(target, 'Vị trí chỉ dùng được khi mở trang bằng địa chỉ https. Hãy dán liên kết Google Maps hoặc gõ tọa độ.'); return; }
+  const perm = await gpsPermissionState();
+  if (perm === 'denied') {
+    showLocInfo(target, 'Trình duyệt đang chặn vị trí của trang này. ' + LOC_SITE_HELP + ' ' + LOC_ON_HELP);
+    return;
+  }
+  showLocInfo(target, 'Đang lấy vị trí từ điện thoại… Hãy bật Vị trí chính xác và đứng ở chỗ thoáng. Nếu trình duyệt hỏi quyền, hãy chọn Cho phép.');
   navigator.geolocation.getCurrentPosition(pos => {
     const c = pos.coords;
     let when = '';
     try { when = new Date(pos.timestamp || Date.now()).toISOString(); } catch (e) { when = new Date().toISOString(); }
     setCoords(target, c.latitude, c.longitude, Math.round(c.accuracy * 10) / 10, when);
+    if (c.accuracy > 50) showLocInfo(target, 'Sai số còn lớn (khoảng ' + Math.round(c.accuracy) + ' m). Có thể điện thoại chưa bật Vị trí chính xác. ' + LOC_ON_HELP + ' Sau đó bấm lại.');
   }, err => {
-    const msg = err.code === 1 ? 'Trang chưa được phép dùng vị trí. Hãy bật quyền vị trí cho trình duyệt, hoặc dán liên kết Google Maps.'
-      : err.code === 3 ? 'Chưa bắt được GPS sau 20 giây. Hãy ra chỗ thoáng rồi bấm lại, hoặc dán liên kết Google Maps.'
-        : 'Không lấy được vị trí. Hãy thử lại, dán liên kết Google Maps hoặc gõ tọa độ.';
+    const msg = err.code === 1 ? 'Chưa được phép dùng vị trí. ' + LOC_SITE_HELP + ' ' + LOC_ON_HELP
+      : err.code === 2 ? 'Điện thoại chưa xác định được vị trí. ' + LOC_ON_HELP + ' Hoặc dán liên kết Google Maps.'
+        : err.code === 3 ? 'Chưa lấy được vị trí sau 20 giây. ' + LOC_ON_HELP + ' Ra chỗ thoáng rồi bấm lại, hoặc dán liên kết Google Maps.'
+          : 'Không lấy được vị trí. Hãy thử lại, dán liên kết Google Maps hoặc gõ tọa độ.';
     showLocInfo(target, msg);
   }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
 }
@@ -1568,7 +1590,7 @@ function openEditIssue(id) {
       <fieldset class="field loc">
         <legend>Tọa độ</legend>
         <div class="loc-actions">
-          <button type="button" class="btn" data-act="gps" data-target="edit">Lấy vị trí GPS</button>
+          <button type="button" class="btn" data-act="gps" data-target="edit">Lấy vị trí từ điện thoại</button>
           <button type="button" class="btn ghost" data-act="toggle-link" data-target="edit">Dán liên kết Google Maps</button>
         </div>
         <div class="loc-link" id="editLinkBox" hidden>
