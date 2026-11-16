@@ -1023,11 +1023,16 @@ function statTable(issues, byStatus) {
   const gName = i => i.group || '(chưa có nhóm)';
   const names = Array.from(new Set(issues.map(gName))).sort(cmpVi);
   const head = STATUSES.map(s => `<th>${esc(s)}</th>`).join('');
+  // Mỗi số là liên kết: mở danh sách đúng nhóm và trạng thái đó (số 0 không cần liên kết).
   const body = names.map(g => {
     const rows = issues.filter(i => gName(i) === g);
-    return `<tr><th scope="row">${esc(g)}</th>${STATUSES.map(s => `<td>${rows.filter(i => i.status === s).length}</td>`).join('')}<td><b>${rows.length}</b></td></tr>`;
+    const cells = STATUSES.map(st => {
+      const n = rows.filter(i => i.status === st).length;
+      return `<td>${n ? `<button type="button" class="linklike" data-act="filter-gs" data-g="${esc(g)}" data-s="${esc(st)}" title="Xem ${n} hạng mục ${esc(st)} thuộc ${esc(g)}">${n}</button>` : 0}</td>`;
+    }).join('');
+    return `<tr><th scope="row"><button type="button" class="linklike" data-act="filter-group" data-v="${esc(g)}" title="Xem toàn bộ nhóm ${esc(g)}">${esc(g)}</button></th>${cells}<td><b><button type="button" class="linklike" data-act="filter-group" data-v="${esc(g)}">${rows.length}</button></b></td></tr>`;
   }).join('');
-  const foot = `<tr><th scope="row">Tổng cộng</th>${byStatus.map(n => `<td>${n}</td>`).join('')}<td><b>${issues.length}</b></td></tr>`;
+  const foot = `<tr><th scope="row">Tổng cộng</th>${byStatus.map((n, k) => `<td>${n ? `<button type="button" class="linklike" data-act="filter-status" data-v="${esc(STATUSES[k])}">${n}</button>` : 0}</td>`).join('')}<td><b>${issues.length}</b></td></tr>`;
   return `<div class="table-wrap"><table class="stat-table"><thead><tr><th>Nhóm</th>${head}<th>Tổng</th></tr></thead>
     <tbody>${body}</tbody><tfoot>${foot}</tfoot></table></div>`;
 }
@@ -1124,7 +1129,8 @@ function renderList() {
   renderListFilters();
   const list = filteredIssues();
   const total = $('#qDeleted').checked ? S.issues.size : liveIssues().length;
-  $('#listCount').textContent = total ? `Đang hiện ${list.length} trên ${total} hạng mục` : 'Chưa có hạng mục nào.';
+  const active = [$('#qGroup').value, $('#qStatus').value, $('#qPriority').value].filter(Boolean);
+  $('#listCount').textContent = total ? `Đang hiện ${list.length} trên ${total} hạng mục${active.length ? ' · Đang lọc: ' + active.join(', ') : ''}` : 'Chưa có hạng mục nào.';
   $('#listRows').innerHTML = renderTree(list.slice(0, 300));
   if (!treeWired) {
     treeWired = true;
@@ -1516,6 +1522,7 @@ async function submitRecheck(form) {
   const errEl = $('#rcError');
   showError(errEl, '');
   const issueId = RC.issueId;
+  const newStatus = radioValue(form, 'rcStatus');
   const btn = $('#rcSubmit');
   btn.disabled = true;
   btn.textContent = 'Đang gửi, chờ máy chủ xác nhận…';
@@ -1530,7 +1537,15 @@ async function submitRecheck(form) {
     S.sheet = null;
     applyWrite(r);
     renderIssueSheet(issueId);
-    toast('Máy chủ đã xác nhận: đã ghi lượt khảo sát.');
+    // Đang lọc theo một trạng thái khác: chuyển bộ lọc sang trạng thái mới để hạng mục vẫn hiện trong danh mục.
+    const qs = $('#qStatus');
+    if (qs.value && qs.value !== newStatus) {
+      qs.value = newStatus;
+      renderList();
+      toast('Máy chủ đã xác nhận: đã ghi lượt khảo sát. Danh mục đã chuyển sang mục "' + newStatus + '" để bạn thấy hạng mục này.');
+    } else {
+      toast('Máy chủ đã xác nhận: đã ghi lượt khảo sát.');
+    }
   } catch (e) {
     showError(errEl, 'Chưa ghi được: ' + e.message + ' Nội dung vẫn còn, hãy bấm gửi lại.');
     btn.disabled = false;
@@ -2079,6 +2094,7 @@ const ACTIONS = {
   'clear-draft': async () => { if (await confirmBox('Xóa bản nháp đang soạn trên máy này?', 'Xóa bản nháp')) resetRecord({}); },
   'filter-status': el => { setView('list'); $('#qStatus').value = el.dataset.v; $('#qGroup').value = ''; renderList(); },
   'filter-group': el => { setView('list'); $('#qGroup').value = el.dataset.v; $('#qStatus').value = ''; renderList(); },
+  'filter-gs': el => { setView('list'); $('#qGroup').value = el.dataset.g; $('#qStatus').value = el.dataset.s; $('#qPriority').value = ''; renderList(); },
   'toggle-status': el => { const s = el.dataset.v; if (mapState.hidden.has(s)) mapState.hidden.delete(s); else mapState.hidden.add(s); renderMap(); },
   'retry-map': () => { mapState.mode = null; mapState.loading = null; renderMap(); },
   'export-xlsx': () => doExportXlsx(),
