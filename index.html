@@ -423,10 +423,11 @@ input::placeholder, textarea::placeholder { color: #7B8B91; }
 
     <h3>Liên kết My Maps</h3>
     <form id="cfgForm" class="stack" novalidate>
-      <label for="cfgMyMaps">Dán liên kết bản đồ My Maps của tổ (bắt đầu bằng https://www.google.com/maps/d/)</label>
-      <input id="cfgMyMaps" type="url" maxlength="500" placeholder="https://www.google.com/maps/d/…">
+      <p class="hint">Mỗi bản đồ cần một tên hiển thị và một liên kết bắt đầu bằng https://www.google.com/maps/d/. Số lượng không giới hạn.</p>
+      <div id="myMapsEditor" class="stack"></div>
+      <button type="button" class="btn" data-act="mm-add">Thêm liên kết</button>
       <p class="error" id="cfgError" role="alert" hidden></p>
-      <button type="submit" class="btn">Lưu liên kết</button>
+      <button type="submit" class="btn primary">Lưu danh sách My Maps</button>
     </form>
 
     <h3>Nhật ký thay đổi</h3>
@@ -572,6 +573,12 @@ function isShortMapLink(url) {
 }
 
 /** Liên kết My Maps: chỉ https, máy chủ www.google.com, đường dẫn /maps/d/. */
+/** Giữ lại các mục My Maps có tên và liên kết hợp lệ. */
+function cleanMaps(list) {
+  if (!Array.isArray(list)) return [];
+  return list.filter(m => m && typeof m.name === 'string' && m.name.trim() && validMyMaps(m.url))
+    .map(m => ({ name: m.name.trim(), url: m.url }));
+}
 function validMyMaps(url) {
   if (typeof url !== 'string' || url.length > 500 || /[\s<>"'\\]/.test(url)) return false;
   if (url.indexOf('https://www.google.com/maps/d/') !== 0) return false;
@@ -661,7 +668,7 @@ function uid(prefix) {
 const S = {
   sites: new Map(), issues: new Map(), checks: new Map(),
   byIssue: new Map(),
-  config: { myMapsUrl: '' },
+  config: { myMaps: [] },
   rev: 0, lastSync: null, cacheAt: null, syncError: '', loaded: false,
   view: 'overview', sheet: null
 };
@@ -763,7 +770,7 @@ async function sync() {
     (r.sites || []).forEach(o => { S.sites.set(o.id, o); changed = true; });
     (r.issues || []).forEach(o => { S.issues.set(o.id, o); changed = true; });
     (r.checks || []).forEach(o => { S.checks.set(o.id, o); changed = true; });
-    if (r.config && r.config.myMapsUrl !== S.config.myMapsUrl) { S.config = { myMapsUrl: validMyMaps(r.config.myMapsUrl) ? r.config.myMapsUrl : '' }; changed = true; }
+    if (r.config && JSON.stringify(cleanMaps(r.config.myMaps)) !== JSON.stringify(S.config.myMaps)) { S.config = { myMaps: cleanMaps(r.config.myMaps) }; changed = true; }
     S.rev = Number(r.rev) || 0;
     S.lastSync = new Date();
     S.syncError = '';
@@ -802,7 +809,7 @@ function loadCache() {
   (c.sites || []).forEach(o => S.sites.set(o.id, o));
   (c.issues || []).forEach(o => S.issues.set(o.id, o));
   (c.checks || []).forEach(o => S.checks.set(o.id, o));
-  if (c.config && validMyMaps(c.config.myMapsUrl)) S.config = { myMapsUrl: c.config.myMapsUrl };
+  if (c.config) S.config = { myMaps: cleanMaps(c.config.myMaps) };
   S.cacheAt = c.at;
   reindex();
 }
@@ -812,7 +819,7 @@ function applyWrite(r) {
   if (r.site) S.sites.set(r.site.id, r.site);
   if (r.issue) S.issues.set(r.issue.id, r.issue);
   if (r.check) S.checks.set(r.check.id, r.check);
-  if (r.config) S.config = { myMapsUrl: validMyMaps(r.config.myMapsUrl) ? r.config.myMapsUrl : '' };
+  if (r.config) S.config = { myMaps: cleanMaps(r.config.myMaps) };
   reindex();
   saveCache();
   renderAll();
@@ -1913,8 +1920,8 @@ function renderMap() {
   const missing = live.length - withCoords.length;
   const notes = [];
   if (missing) notes.push(missing + ' hạng mục chưa có tọa độ nên không hiện trên bản đồ.');
-  $('#myMapsBox').innerHTML = validMyMaps(S.config.myMapsUrl)
-    ? `<a class="btn" href="${esc(S.config.myMapsUrl)}" target="_blank" rel="noopener noreferrer">Mở bản đồ My Maps của tổ</a>` : '';
+  $('#myMapsBox').innerHTML = S.config.myMaps.map(m =>
+    `<a class="btn" href="${esc(m.url)}" target="_blank" rel="noopener noreferrer">${esc(m.name)}</a>`).join('');
 
   if (mapState.mode === null) {
     $('#mapNote').textContent = 'Đang tải bản đồ nền…';
@@ -1965,9 +1972,49 @@ function renderPlainMap(points) {
 
 /* ---------- Xuất ---------- */
 
+// Trình soạn danh sách My Maps trong Cài đặt. Bản nháp giữ các dòng đang gõ; chỉ tải lại từ máy chủ khi chưa sửa.
+let mmDraft = null, mmDirty = false;
+
+function readMyMapsEditor() {
+  return Array.from(document.querySelectorAll('#myMapsEditor .mm-row')).map(row => ({
+    name: row.querySelector('.mm-name').value,
+    url: row.querySelector('.mm-url').value.trim()
+  }));
+}
+
 function renderExport() {
-  const input = $('#cfgMyMaps');
-  if (document.activeElement !== input) input.value = S.config.myMapsUrl || '';
+  const box = $('#myMapsEditor');
+  if (!box) return;
+  if (!mmDirty || !mmDraft) { mmDraft = S.config.myMaps.map(m => ({ ...m })); mmDirty = false; }
+  // Không vẽ lại khi người dùng đang gõ trong một ô nhập, để không mất chữ đang gõ.
+  const a = document.activeElement;
+  if (a && a.tagName === 'INPUT' && box.contains(a)) return;
+  drawMyMapsEditor();
+}
+
+function drawMyMapsEditor() {
+  const box = $('#myMapsEditor');
+  if (!box) return;
+  box.innerHTML = mmDraft.map((m, k) => `
+    <div class="mm-row">
+      <label>Tên hiển thị<input class="mm-name" type="text" maxlength="80" value="${esc(m.name)}"></label>
+      <label>Liên kết My Maps<input class="mm-url" type="url" maxlength="500" value="${esc(m.url)}" placeholder="https://www.google.com/maps/d/…"></label>
+      <button type="button" class="btn ghost" data-act="mm-remove" data-i="${k}">Xóa</button>
+    </div>`).join('') || '<p class="hint">Chưa có liên kết nào.</p>';
+}
+
+function mmAdd() {
+  mmDraft = readMyMapsEditor();
+  mmDraft.push({ name: '', url: '' });
+  mmDirty = true;
+  drawMyMapsEditor();
+}
+
+function mmRemove(i) {
+  mmDraft = readMyMapsEditor();
+  mmDraft.splice(Number(i), 1);
+  mmDirty = true;
+  drawMyMapsEditor();
 }
 
 function download(name, mime, text) {
@@ -2041,13 +2088,18 @@ function doExport(kind) {
 async function submitConfig() {
   const errEl = $('#cfgError');
   showError(errEl, '');
-  const url = $('#cfgMyMaps').value.trim();
-  if (url && !validMyMaps(url)) return showError(errEl, 'Liên kết phải bắt đầu bằng https://www.google.com/maps/d/ (liên kết chia sẻ của Google My Maps).');
+  const rows = readMyMapsEditor().filter(m => m.name.trim() || m.url);
+  for (let k = 0; k < rows.length; k++) {
+    const m = rows[k];
+    if (!m.name.trim()) return showError(errEl, 'Liên kết thứ ' + (k + 1) + ' cần có tên hiển thị.');
+    if (!validMyMaps(m.url)) return showError(errEl, 'Liên kết "' + m.name.trim() + '" phải bắt đầu bằng https://www.google.com/maps/d/ (liên kết chia sẻ của Google My Maps).');
+  }
   if (!requireName()) return;
   try {
-    const r = await call('setConfig', { myMapsUrl: url }, { write: true });
+    const r = await call('setConfig', { myMaps: rows.map(m => ({ name: m.name.trim(), url: m.url })) }, { write: true });
+    mmDirty = false;
     applyWrite(r);
-    toast(url ? 'Máy chủ đã xác nhận: đã lưu liên kết My Maps.' : 'Máy chủ đã xác nhận: đã gỡ liên kết My Maps.');
+    toast('Máy chủ đã xác nhận: đã lưu danh sách My Maps (' + r.config.myMaps.length + ' liên kết).');
   } catch (e) { showError(errEl, 'Chưa lưu được: ' + e.message); }
 }
 
@@ -2056,7 +2108,7 @@ async function submitConfig() {
 const KEY_LABELS = {
   status: 'Trạng thái', item: 'Hạng mục', group: 'Nhóm', priority: 'Ưu tiên', address: 'Địa chỉ', lat: 'Vĩ độ', lng: 'Kinh độ',
   siteId: 'Vị trí', name: 'Tên', area: 'Khu vực', note: 'Ghi chú', deletedAt: 'Xóa lúc', deletedBy: 'Người xóa',
-  myMapsUrl: 'Liên kết My Maps', accuracy: 'Sai số GPS', gpsTime: 'Thời điểm GPS', round: 'Đợt khảo sát'
+  myMapsList: 'Danh sách My Maps', myMapsUrl: 'Liên kết My Maps', accuracy: 'Sai số GPS', gpsTime: 'Thời điểm GPS', round: 'Đợt khảo sát'
 };
 function auditValue(key, v) {
   if (v === null || v === undefined || v === '') return '(trống)';
@@ -2077,7 +2129,7 @@ function auditDiff(e) {
 function auditObject(id) {
   if (S.issues.has(id)) return S.issues.get(id).item;
   if (S.sites.has(id)) return S.sites.get(id).name;
-  return id === 'myMapsUrl' ? 'Cấu hình' : id;
+  return id === 'myMapsUrl' || id === 'myMapsList' ? 'Cấu hình' : id;
 }
 
 async function openAudit(objectId) {
@@ -2116,6 +2168,8 @@ const ACTIONS = {
   'clear-draft': async () => { if (await confirmBox('Xóa bản nháp đang soạn trên máy này?', 'Xóa bản nháp')) resetRecord({}); },
   'filter-status': el => { setView('list'); $('#qStatus').value = el.dataset.v; $('#qGroup').value = ''; renderList(); },
   'filter-group': el => { setView('list'); $('#qGroup').value = el.dataset.v; $('#qStatus').value = ''; renderList(); },
+  'mm-add': () => mmAdd(),
+  'mm-remove': el => mmRemove(el.dataset.i),
   'filter-gs': el => { setView('list'); $('#qGroup').value = el.dataset.g; $('#qStatus').value = el.dataset.s; $('#qPriority').value = ''; renderList(); },
   'toggle-status': el => { const s = el.dataset.v; if (mapState.hidden.has(s)) mapState.hidden.delete(s); else mapState.hidden.add(s); renderMap(); },
   'retry-map': () => { mapState.mode = null; mapState.loading = null; renderMap(); },
@@ -2127,6 +2181,8 @@ const ACTIONS = {
 };
 
 function init() {
+  // Gõ trong trình soạn My Maps: đánh dấu có thay đổi để không bị ghi đè khi đồng bộ.
+  document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#myMapsEditor')) mmDirty = true; });
   $('#fPriority').insertAdjacentHTML('beforeend', segHtml('priority', PRIORITIES, 'Trung bình'));
   $('#fStatus').insertAdjacentHTML('beforeend', segHtml('status', STATUSES, STATUSES[0], true));
   applyTheme();
