@@ -226,6 +226,22 @@ input::placeholder, textarea::placeholder { color: #7B8B91; }
   @keyframes rise { from { transform: translateY(24px); } to { transform: none; } }
 }
 
+/* Bảng thống kê và danh sách dạng cây */
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.stat-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+.stat-table th, .stat-table td { padding: 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+.stat-table thead th { font-size: 0.8125rem; color: var(--muted); }
+.stat-table th:first-child { text-align: left; white-space: normal; }
+.stat-table tfoot th, .stat-table tfoot td { border-bottom: 0; font-weight: 700; }
+.tree-root { margin: 12px 0 0; }
+.tree { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); margin: 8px 0; }
+.tree > summary { cursor: pointer; padding: 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; list-style: none; }
+.tree > summary::-webkit-details-marker { display: none; }
+.tree .tree { margin: 6px 8px; }
+.tree .tree > summary { font-weight: 600; font-size: 0.9375rem; }
+.tree-title { overflow-wrap: anywhere; min-width: 0; }
+.tree .rows { margin: 0 0 8px; border: 0; border-radius: 0; background: none; }
+
 </style>
 </head>
 <body>
@@ -351,7 +367,7 @@ input::placeholder, textarea::placeholder { color: #7B8B91; }
       <label class="check"><input type="checkbox" id="qDeleted"> Hiện cả hạng mục đã xóa</label>
     </div>
     <p class="count" id="listCount"></p>
-    <ul class="rows" id="listRows"></ul>
+    <div class="tree-root" id="listRows"></div>
   </section>
 
   <!-- 4. BẢN ĐỒ -->
@@ -978,7 +994,22 @@ function renderOverview() {
     <ul class="breakdown">
       ${groupRows.map(([g, n]) => `<li><button type="button" data-act="filter-group" data-v="${esc(g)}"><span>${esc(g)}</span><span class="n">${n}</span>
         <span class="bar"><i style="width:${(n / maxG * 100).toFixed(1)}%"></i></span></button></li>`).join('')}
-    </ul>`;
+    </ul>
+    <h3>Bảng thống kê theo nhóm</h3>
+    ${statTable(issues, byStatus)}`;
+}
+
+function statTable(issues, byStatus) {
+  const gName = i => i.group || '(chưa có nhóm)';
+  const names = Array.from(new Set(issues.map(gName))).sort(cmpVi);
+  const head = STATUSES.map(s => `<th>${esc(s)}</th>`).join('');
+  const body = names.map(g => {
+    const rows = issues.filter(i => gName(i) === g);
+    return `<tr><th scope="row">${esc(g)}</th>${STATUSES.map(s => `<td>${rows.filter(i => i.status === s).length}</td>`).join('')}<td><b>${rows.length}</b></td></tr>`;
+  }).join('');
+  const foot = `<tr><th scope="row">Tổng cộng</th>${byStatus.map(n => `<td>${n}</td>`).join('')}<td><b>${issues.length}</b></td></tr>`;
+  return `<div class="table-wrap"><table class="stat-table"><thead><tr><th>Nhóm</th>${head}<th>Tổng</th></tr></thead>
+    <tbody>${body}</tbody><tfoot>${foot}</tfoot></table></div>`;
 }
 
 /* ---------- Danh sách ---------- */
@@ -1002,6 +1033,7 @@ function issueRow(i) {
       <span>
         <b>${esc(i.item)}</b>
         <span class="meta">${esc(i.group)}. ${esc(where)}</span>
+        <span class="meta">GPS: ${hasCoords(i) ? i.lat.toFixed(6) + ', ' + i.lng.toFixed(6) + (typeof i.accuracy === 'number' ? ' (sai số ' + i.accuracy + ' m)' : '') : 'chưa có tọa độ'}</span>
         <span class="meta">${i.deletedAt ? 'Đã xóa lúc ' + esc(fmtDT(i.deletedAt)) + ' bởi ' + esc(i.deletedBy) : chip(i.status) + ` &nbsp;<span class="pri pri-${pk}">Ưu tiên ${esc(String(i.priority).toLowerCase())}</span>`}</span>
         <span class="meta">${cs.length} lượt khảo sát${last ? ', mới nhất ' + esc(fmtDT(last.createdAt)) + ' bởi ' + esc(last.recorder) : ''}</span>
       </span>
@@ -1029,12 +1061,62 @@ function filteredIssues() {
   }).sort((a, b) => String(lastActivity(b)).localeCompare(String(lastActivity(a))));
 }
 
+const openKeys = new Set();
+function cmpVi(a, b) { return String(a).localeCompare(String(b), 'vi'); }
+function addrOf(i) { return i.address || siteName(i.siteId) || '(chưa có địa chỉ)'; }
+
+function detailsBox(key, summary, inner) {
+  return `<details class="tree" data-key="${esc(key)}"${openKeys.has(key) ? ' open' : ''}><summary>${summary}</summary>${inner}</details>`;
+}
+
+function sumOf(map) { let n = 0; map.forEach(v => { n += v instanceof Map ? sumOf(v) : v.length; }); return n; }
+
+/** Cây: Nhóm công việc → Địa chỉ → Nội dung hư hỏng → các ghi nhận (thứ tự theo danh sách). */
+function renderTree(list) {
+  const tree = new Map();
+  list.forEach(i => {
+    const g = i.group || '(chưa có nhóm)', a = addrOf(i), it = i.item || '(chưa có tên)';
+    if (!tree.has(g)) tree.set(g, new Map());
+    const ga = tree.get(g);
+    if (!ga.has(a)) ga.set(a, new Map());
+    const gi = ga.get(a);
+    if (!gi.has(it)) gi.set(it, []);
+    gi.get(it).push(i);
+  });
+  return Array.from(tree.keys()).sort(cmpVi).map(g => {
+    const addrs = tree.get(g);
+    const inner = Array.from(addrs.keys()).sort(cmpVi).map(a => {
+      const items = addrs.get(a);
+      const innerI = Array.from(items.keys()).sort(cmpVi).map(it => {
+        const recs = items.get(it);
+        return detailsBox(`i|${g}|${a}|${it}`,
+          `<span class="tree-title">${esc(it)}</span><span class="meta">${recs.length} ghi nhận</span>`,
+          `<ul class="rows">${recs.map(issueRow).join('')}</ul>`);
+      }).join('');
+      return detailsBox(`a|${g}|${a}`,
+        `<span class="tree-title">${esc(a)}</span><span class="meta">${sumOf(items)} ghi nhận</span>`, innerI);
+    }).join('');
+    return detailsBox(`g|${g}`,
+      `<span class="tree-title">${esc(g)}</span><span class="meta">${sumOf(addrs)} ghi nhận</span>`, inner);
+  }).join('');
+}
+
+let treeWired = false;
 function renderList() {
   renderListFilters();
   const list = filteredIssues();
   const total = $('#qDeleted').checked ? S.issues.size : liveIssues().length;
   $('#listCount').textContent = total ? `Đang hiện ${list.length} trên ${total} hạng mục` : 'Chưa có hạng mục nào.';
-  $('#listRows').innerHTML = list.slice(0, 300).map(issueRow).join('');
+  $('#listRows').innerHTML = renderTree(list.slice(0, 300));
+  if (!treeWired) {
+    treeWired = true;
+    // Ghi nhớ nhóm nào đang mở để lần đồng bộ sau không làm đóng lại.
+    $('#listRows').addEventListener('toggle', e => {
+      const d = e.target;
+      if (!d.dataset || !d.dataset.key) return;
+      if (d.open) openKeys.add(d.dataset.key); else openKeys.delete(d.dataset.key);
+    }, true);
+  }
   if (list.length > 300) $('#listCount').textContent += '. Chỉ hiện 300 mục mới nhất, hãy lọc để thu hẹp.';
 }
 
@@ -1076,8 +1158,7 @@ function renderIssueSheet(id, keepScroll) {
       <dt>Nhóm</dt><dd>${esc(i.group)}</dd>
       <dt>Vị trí</dt><dd>${esc(siteName(i.siteId))}</dd>
       <dt>Địa chỉ</dt><dd>${esc(i.address) || '(chưa có)'}</dd>
-      <dt>Tọa độ</dt><dd>${coords ? `${i.lat.toFixed(6)}, ${i.lng.toFixed(6)}${i.accuracy !== null && i.accuracy !== undefined ? ' (sai số khoảng ' + esc(i.accuracy) + ' m)' : ''}
-        <br><a href="https://www.google.com/maps?q=${i.lat},${i.lng}" target="_blank" rel="noopener noreferrer">Mở trong Google Maps</a>` : '(chưa có)'}</dd>
+      <dt>Tọa độ</dt><dd>${coords ? `<a href="https://www.google.com/maps?q=${i.lat},${i.lng}" target="_blank" rel="noopener noreferrer">${i.lat.toFixed(6)}, ${i.lng.toFixed(6)}</a>${i.accuracy !== null && i.accuracy !== undefined ? ' (sai số khoảng ' + esc(i.accuracy) + ' m)' : ''}` : '(chưa có)'}</dd>
       <dt>Ghi nhận</dt><dd>${esc(fmtDT(i.createdAt))}, ${esc(i.recorder)}</dd>
     </dl>
     <div class="form-actions" style="margin-bottom:22px">
@@ -1790,7 +1871,7 @@ function kmlText() {
       `<ExtendedData>${data.map(d => `<Data name="${xml(d[0])}"><value>${xml(d[1])}</value></Data>`).join('')}</ExtendedData>` +
       `<Point><coordinates>${i.lng},${i.lat},0</coordinates></Point></Placemark>`;
   });
-  return `<${'?'}xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>Hiện trạng hạ tầng phường Nha Trang ${stamp()}</name>${styles}${marks.join('\n')}</Document></kml>\n`;
+  return `<${'?'}xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>Hiện trạng hạ tầng công viên tuyến biển phường Nha Trang ${stamp()}</name>${styles}${marks.join('\n')}</Document></kml>\n`;
 }
 
 function doExport(kind) {
